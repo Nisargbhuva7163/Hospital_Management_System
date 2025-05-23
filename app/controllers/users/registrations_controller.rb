@@ -40,14 +40,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def sign_up_params
     params.require(:user).permit(
       :email, :password, :password_confirmation,
-      organization_attributes: [ :org_name, :phone_number ]
+      organization_attributes: [ :org_name, :phone_number, :address ]
     )
   end
 
   def account_update_params
     params.require(:user).permit(
       :email, :password, :password_confirmation, :current_password,
-      organization_attributes: [ :id, :org_name, :phone_number ]
+      organization_attributes: [ :id, :org_name, :phone_number, :address ]
     )
   end
 end
