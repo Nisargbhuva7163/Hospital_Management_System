@@ -15,6 +15,16 @@
           <p><strong>Address:</strong> <%= @organization.address %></p>
           <p><strong>Created At:</strong> <%= @organization.created_at.strftime('%d %b %Y, %I:%M %p') %></p>
         </div>
+
+        <!-- Right side: QR Code -->
+        <div class="col-md-4 text-center">
+          <% if current_user.organization.qr_code.attached? %>
+            <%= image_tag url_for(current_user.organization.qr_code), class: "img-fluid", style: "max-width: 200px;" %>
+            <p class="mt-2 text-muted">Scan to access your organization</p>
+          <% else %>
+            <p class="text-muted">No QR code generated yet.</p>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
