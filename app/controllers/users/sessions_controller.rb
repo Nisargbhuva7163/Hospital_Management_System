@@ -1,6 +1,15 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
+
+  def create
+    super do |user|
+      if user.organization.present? && !user.organization.qr_code.attached?
+        user.organization.generate_qr_code!
+      end
+    end
+  end
+
   def after_sign_in_path_for(resource)
     organization_path(resource.organization)
   end
