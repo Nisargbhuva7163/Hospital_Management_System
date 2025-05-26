@@ -24,5 +24,13 @@ Rails.application.routes.draw do
     root to: redirect("/users/sign_up"), as: :unauthenticated_root
   end
   # Defines the root path route ("/")
-  resources :organizations, only: [ :show ]
+  resources :organizations, only: [ :index, :show ] do
+    resources :appointments do
+      collection do
+        post :send_otp
+        post :verify_otp
+      end
+    end
+
+  end
 end

@@ -1,11 +1,12 @@
 class Organization < ApplicationRecord
   has_many :users, dependent: :destroy
+  has_many :appointments, dependent: :destroy
   has_one_attached :qr_code
 
   def generate_qr_code!
     return if qr_code.attached?
 
-    qr_data = Rails.application.routes.url_helpers.organization_url(self, host: "localhost:7000")
+    qr_data = Rails.application.routes.url_helpers.new_organization_appointment_url(self, host: "localhost:7000")
     qrcode = RQRCode::QRCode.new(qr_data)
     png = qrcode.as_png(size: 300)
 
@@ -19,4 +20,6 @@ class Organization < ApplicationRecord
     file.close
     file.unlink
   end
+
+
 end

@@ -1,0 +1,29 @@
+<h1>All Appointments for <%= @organization.org_name %></h1>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Token No</th>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Gender</th>
+    <th>Phone Number</th>
+    <th>Booked At</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @appointments.each do |appointment| %>
+    <tr>
+      <td><%= appointment.token_no %></td>
+      <td><%= appointment.name %></td>
+      <td><%= appointment.age %></td>
+      <td><%= appointment.gender %></td>
+      <td><%= appointment.phone_number %></td>
+      <td><%= appointment.created_at.strftime("%d %b %Y %H:%M") %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+
+<%= link_to "← Back to Organizations", organizations_path, class: "btn btn-secondary mb-3" %>
