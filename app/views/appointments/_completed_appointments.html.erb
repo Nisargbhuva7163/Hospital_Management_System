@@ -1,0 +1,30 @@
+<h2 class="mt-5">Completed Appointments</h2>
+
+<% if appointments.any? %>
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Token No</th>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Gender</th>
+      <th>Phone Number</th>
+      <th>Completed At</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% appointments.each do |appointment| %>
+      <tr>
+        <td><%= appointment.token_no %></td>
+        <td><%= appointment.name %></td>
+        <td><%= appointment.age %></td>
+        <td><%= appointment.gender %></td>
+        <td><%= appointment.phone_number %></td>
+        <td><%= appointment.updated_at.strftime("%d %b %Y %H:%M") %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No completed appointments.</p>
+<% end %>

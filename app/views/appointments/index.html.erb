@@ -9,6 +9,8 @@
     <th>Gender</th>
     <th>Phone Number</th>
     <th>Booked At</th>
+    <th>Status</th>
+    <th>Actions</th>
   </tr>
   </thead>
   <tbody>
@@ -20,10 +22,36 @@
       <td><%= appointment.gender %></td>
       <td><%= appointment.phone_number %></td>
       <td><%= appointment.created_at.strftime("%d %b %Y %H:%M") %></td>
+      <td><%= appointment.status.present? ? appointment.status.capitalize : "Pending" %></td>
+      <td>
+        <% if appointment.pending? || appointment.skipped? %>
+          <%= button_to "Complete",
+                        complete_organization_appointment_path(@organization, appointment),
+                        method: :patch,
+                        class: "btn btn-success btn-sm",
+                        data: { confirm: "Mark this appointment as completed?" } %>
+        <% end %>
+
+        <% if appointment.pending? %>
+          <%= button_to "Skip",
+                        skip_organization_appointment_path(@organization, appointment),
+                        method: :patch,
+                        class: "btn btn-warning btn-sm",
+                        data: { confirm: "Skip this appointment?" } %>
+        <% end %>
+
+        <% if appointment.completed? %>
+          <em>Completed</em>
+        <% elsif appointment.skipped? %>
+          <em>Skipped</em>
+        <% end %>
+      </td>
     </tr>
   <% end %>
   </tbody>
 </table>
 
+<%= render partial: "completed_appointments", locals: { appointments: @appointments.select(&:completed?) } %>
+<%= render partial: "skipped_appointments", locals: { appointments: @appointments.select(&:skipped?) } %>
 
 <%= link_to "← Back to Organizations", organizations_path, class: "btn btn-secondary mb-3" %>

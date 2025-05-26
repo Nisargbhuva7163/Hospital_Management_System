@@ -30,6 +30,10 @@ Rails.application.routes.draw do
         post :send_otp
         post :verify_otp
       end
+      member do
+        patch :complete
+        patch :skip
+      end
     end
 
   end
