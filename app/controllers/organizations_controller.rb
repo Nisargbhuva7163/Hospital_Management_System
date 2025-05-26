@@ -1,11 +1,15 @@
 class OrganizationsController < ApplicationController
 
-  def show
-    @organization = Organization.find(params[:id])
+  def index
+    @organization = current_user.organization
 
-    # Optional: Make sure the current user belongs to this org
-    unless current_user.organization == @organization
+    unless @organization
       redirect_to root_path, alert: "Access denied."
+      return
     end
+
+    @current_token_appointment = @organization.appointments.order(created_at: :asc).first
+    @total_appointments_count = @organization.appointments.count
   end
+
 end

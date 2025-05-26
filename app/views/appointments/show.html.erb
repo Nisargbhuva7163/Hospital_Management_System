@@ -1,0 +1,46 @@
+<div class="container mt-5">
+  <!-- Token Display Box -->
+  <div class="text-center mb-4">
+    <div class="alert alert-success display-4 fw-bold py-4">
+      🎫 Your Token Number: <%= @appointment.token_no %>
+    </div>
+  </div>
+
+  <!-- Appointment Details -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">🧑‍⚕️ Patient Details</h4>
+        </div>
+        <div class="card-body">
+          <p><strong>Name:</strong> <%= @appointment.name %></p>
+          <p><strong>Age:</strong> <%= @appointment.age %></p>
+          <p><strong>Gender:</strong> <%= @appointment.gender %></p>
+          <p><strong>Phone Number:</strong> <%= @appointment.phone_number %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Organization Details -->
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card border-secondary shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">🏥 Organization Info</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Name:</strong> <%= @organization.org_name %></p>
+          <p><strong>Email:</strong> <%= current_user.email %></p>
+          <p><strong>Phone:</strong> <%= @organization.phone_number %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Book Again Button -->
+  <div class="text-center mt-4">
+    <%= link_to "🔁 Book Another Appointment", new_organization_appointment_path(@organization), class: "btn btn-outline-primary" %>
+  </div>
+</div>
