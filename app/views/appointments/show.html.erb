@@ -6,6 +6,21 @@
     </div>
   </div>
 
+  <!-- Completed Appointment Message -->
+  <% if @appointment.completed? %>
+    <div class="alert alert-success text-center fw-bold fs-4 mb-4">
+      ✅ Your appointment is completed.
+    </div>
+  <% elsif @appointment.skipped? %>
+    <div class="alert alert-warning text-center fw-bold fs-4 mb-4">
+      ⚠️ Your appointment was skipped. Please contact the hospital.
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center fw-bold fs-4 mb-4">
+      🕒 Please wait. Your appointment is pending.
+    </div>
+  <% end %>
+
   <!-- Appointment Details -->
   <div class="row justify-content-center mb-5">
     <div class="col-md-8">

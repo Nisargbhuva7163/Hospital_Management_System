@@ -1,6 +1,8 @@
 class AppointmentsController < ApplicationController
   before_action :set_organization
-  skip_before_action :verify_authenticity_token, only: [:send_otp, :verify_otp]
+  before_action :set_appointment, only: [ :show, :complete, :skip, :update ]
+  before_action :authenticate_user!, only: [ :index, :new, :skip, :complete, :update ]
+  skip_before_action :verify_authenticity_token, only: [ :send_otp, :verify_otp ]
 
   def index
     @appointments = @organization.appointments.order(created_at: :asc)
@@ -10,12 +12,10 @@ class AppointmentsController < ApplicationController
     @appointment = @organization.appointments.new
   end
 
-  # Only handles direct form submissions (NOT used in OTP flow)
   def create
     redirect_to new_organization_appointment_path(@organization), alert: "Please use OTP verification to book an appointment."
   end
 
-  # POST /organizations/:organization_id/appointments/send_otp
   def send_otp
     phone = format_phone_number(params.dig(:appointment, :phone_number))
 
@@ -26,15 +26,12 @@ class AppointmentsController < ApplicationController
     end
   end
 
-  # POST /organizations/:organization_id/appointments/verify_otp
   def verify_otp
     phone = format_phone_number(params[:phone_number])
     otp_code = params[:otp_code]
 
     if SmsService1.verify_otp(phone, otp_code)
-      # Permit data sent along with OTP
       appointment_params = params.require(:appointment).permit(:name, :age, :gender, :phone_number)
-
       last_token_no = @organization.appointments.maximum(:token_no) || 0
       new_token_no = last_token_no + 1
 
@@ -55,7 +52,30 @@ class AppointmentsController < ApplicationController
   end
 
   def show
-    @appointment = @organization.appointments.find(params[:id])
+  end
+
+  def update
+    if @appointment.update(status_params)
+      redirect_to organization_appointments_path(@organization), notice: "Appointment updated successfully."
+    else
+      redirect_to organization_appointments_path(@organization), alert: "Failed to update appointment."
+    end
+  end
+
+  def complete
+    if @appointment.update(status: "completed")
+      redirect_to organization_appointments_path(@organization), notice: "Appointment marked as completed."
+    else
+      redirect_to organization_appointments_path(@organization), alert: "Failed to update appointment."
+    end
+  end
+
+  def skip
+    if @appointment.update(status: "skipped")
+      redirect_to organization_appointments_path(@organization), notice: "Appointment marked as skipped."
+    else
+      redirect_to organization_appointments_path(@organization), alert: "Failed to update appointment."
+    end
   end
 
   private
@@ -64,8 +84,16 @@ class AppointmentsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
   end
 
+  def set_appointment
+    @appointment = @organization.appointments.find(params[:id])
+  end
+
   def appointment_params
     params.require(:appointment).permit(:name, :age, :gender, :phone_number)
+  end
+
+  def status_params
+    params.require(:appointment).permit(:status)
   end
 
   def format_phone_number(phone)
