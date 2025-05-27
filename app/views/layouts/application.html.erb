@@ -18,22 +18,35 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
   <body>
   <%# Show "Admin Dashboard" only for signed-in users and not on new appointment form %>
     <% if user_signed_in? && !(controller_name == "appointments" && action_name.in?(%w[new show])) %>
-      <nav class="navbar navbar-dark bg-dark px-4 py-3 d-flex justify-content-between align-items-center">
+      <nav class="navbar navbar-light bg-white px-4 py-3 d-flex align-items-center">
         <div class="navbar-brand mb-0 h4">Admin Dashboard</div>
-        <% if current_user&.organization.present? %>
-          <%= link_to "All Appointments", organization_appointments_path(current_user.organization), class: "btn btn-outline-primary btn-sm" %>
-        <% end %>
-        <%= button_to "🚪 Log Out", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure you want to log out?" }, class: "btn btn-outline-danger btn-sm" %>
+
+        <div class="ms-auto d-flex align-items-center gap-2">
+          <% if current_user&.organization.present? %>
+            <%= link_to "Manage Appointments", organization_appointments_path(current_user.organization), style: "color: black; background-color: white; font-weight: bold; text-decoration: none;" %>
+
+            <% if current_user.organization.checked_in? %>
+              <span class="text-success fw-bold ms-2">Doctor is available</span>
+              <%= button_to "Check Out", toggle_doctor_status_organization_path(current_user.organization), method: :patch, class: "btn btn-warning btn-sm ms-2" %>
+            <% else %>
+              <span class="text-danger fw-bold ms-2">Doctor is unavailable</span>
+              <%= button_to "Check In", toggle_doctor_status_organization_path(current_user.organization), method: :patch, class: "btn btn-success btn-sm ms-2" %>
+            <% end %>
+          <% end %>
+
+          <%= button_to "🚪 Log Out", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure you want to log out?" }, class: "btn btn-outline-danger btn-sm ms-2" %>
+        </div>
       </nav>
 
-    <% elsif controller_name == "appointments" && action_name.in?(%w[new show]) %>
+
+  <% elsif controller_name == "appointments" && action_name.in?(%w[new show]) %>
       <%# Show "User Dashboard" for public patients on appointment form %>
       <nav class="navbar navbar-light bg-light px-4 py-3 d-flex justify-content-start align-items-center">
         <div class="navbar-brand mb-0 h4">User Dashboard</div>

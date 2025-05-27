@@ -30,7 +30,7 @@ class AppointmentsController < ApplicationController
     phone = format_phone_number(params[:phone_number])
     otp_code = params[:otp_code]
 
-    if SmsService1.verify_otp(phone, otp_code)
+    if SmsService.verify_otp(phone, otp_code)
       appointment_params = params.require(:appointment).permit(:name, :age, :gender, :phone_number)
       last_token_no = @organization.appointments.maximum(:token_no) || 0
       new_token_no = last_token_no + 1
@@ -52,6 +52,7 @@ class AppointmentsController < ApplicationController
   end
 
   def show
+    @current_token_appointment = @organization.appointments.where.not(status: "completed").order(created_at: :asc).first
   end
 
   def update
@@ -100,4 +101,5 @@ class AppointmentsController < ApplicationController
     return "" if phone.blank?
     phone.start_with?("+91") ? phone : "+91#{phone}"
   end
+
 end

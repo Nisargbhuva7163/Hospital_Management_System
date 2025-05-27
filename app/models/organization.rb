@@ -3,6 +3,8 @@ class Organization < ApplicationRecord
   has_many :appointments, dependent: :destroy
   has_one_attached :qr_code
 
+  enum :doctor_status, { checked_out: "checked_out", checked_in: "checked_in" }
+
   def generate_qr_code!
     return if qr_code.attached?
 
@@ -10,7 +12,7 @@ class Organization < ApplicationRecord
     qrcode = RQRCode::QRCode.new(qr_data)
     png = qrcode.as_png(size: 300)
 
-    file = Tempfile.new(["qr_code_#{id}", ".png"])
+    file = Tempfile.new([ "qr_code_#{id}", ".png" ])
     file.binmode
     file.write(png.to_s)
     file.rewind
@@ -20,6 +22,4 @@ class Organization < ApplicationRecord
     file.close
     file.unlink
   end
-
-
 end
