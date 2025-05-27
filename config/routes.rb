@@ -21,10 +21,13 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   unauthenticated do
-    root to: redirect("/users/sign_up"), as: :unauthenticated_root
+    root to: redirect("/users/sign_in"), as: :unauthenticated_root
   end
   # Defines the root path route ("/")
   resources :organizations, only: [ :index, :show ] do
+    member do
+      patch :toggle_doctor_status
+    end
     resources :appointments do
       collection do
         post :send_otp
@@ -35,6 +38,5 @@ Rails.application.routes.draw do
         patch :skip
       end
     end
-
   end
 end

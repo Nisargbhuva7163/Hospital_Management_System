@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Users::SessionsController < Devise::SessionsController
-
   def create
     super do |user|
       if user.organization.present? && !user.organization.qr_code.attached?
@@ -46,7 +45,7 @@ class Users::SessionsController < Devise::SessionsController
           sign_in(:user, user)
           render json: {
             success: true,
-            redirect_path: appointments_path
+            redirect_path: organizations_path
           }, status: :ok
         else
           render json: { success: false, error: "❌ No user associated with this organization." }, status: :not_found
