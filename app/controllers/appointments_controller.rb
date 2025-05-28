@@ -4,6 +4,7 @@ class AppointmentsController < ApplicationController
   before_action :authenticate_user!, only: [ :index, :new, :skip, :complete, :update ]
   skip_before_action :verify_authenticity_token, only: [ :send_otp, :verify_otp ]
 
+
   def index
     @appointments = @organization.appointments.order(created_at: :asc)
   end

@@ -30,6 +30,7 @@
 
         <div class="ms-auto d-flex align-items-center gap-2">
           <% if current_user&.organization.present? %>
+            <%= link_to "Set Booking Window", booking_window_organization_path(current_user.organization), class: "btn btn-outline-primary btn-sm ms-2" %>
             <%= link_to "Manage Appointments", organization_appointments_path(current_user.organization), style: "color: black; background-color: white; font-weight: bold; text-decoration: none;" %>
 
             <% if current_user.organization.checked_in? %>
