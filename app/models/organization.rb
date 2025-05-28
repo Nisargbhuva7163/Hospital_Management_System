@@ -5,6 +5,10 @@ class Organization < ApplicationRecord
 
   enum :doctor_status, { checked_out: "checked_out", checked_in: "checked_in" }
 
+  validates :booking_start_time, presence: true
+  validates :booking_end_time, presence: true
+  validate  :booking_window_is_valid
+
   def generate_qr_code!
     return if qr_code.attached?
 
@@ -21,5 +25,13 @@ class Organization < ApplicationRecord
 
     file.close
     file.unlink
+  end
+
+  private
+
+  def booking_window_is_valid
+    if booking_start_time.present? && booking_end_time.present? && booking_start_time >= booking_end_time
+      errors.add(:booking_start_time, "must be before booking end time")
+    end
   end
 end
