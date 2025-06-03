@@ -9,6 +9,9 @@ class Appointment < ApplicationRecord
   after_create_commit :broadcast_current_token
 
   # default status for new appointments
+
+
+
   def set_default_status
     self.status ||= :pending
   end

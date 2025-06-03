@@ -24,11 +24,13 @@ Rails.application.routes.draw do
     root to: redirect("/users/sign_in"), as: :unauthenticated_root
   end
   # Defines the root path route ("/")
-  resources :organizations, only: [ :index, :show, :update ] do
+  resources :organizations, only: [ :show, :update ] do
     member do
-      get :booking_window
       patch :toggle_doctor_status
     end
+
+    resources :booking_windows, only: [ :new, :create, :destroy ]
+
     resources :appointments do
       collection do
         post :send_otp

@@ -54,4 +54,4 @@
 <%= render partial: "completed_appointments", locals: { appointments: @appointments.select(&:completed?) } %>
 <%= render partial: "skipped_appointments", locals: { appointments: @appointments.select(&:skipped?) } %>
 
-<%= link_to "← Back to Organizations", organizations_path, class: "btn btn-secondary mb-3" %>
+<%= link_to "← Back to Organizations", organization_path(id: @organization.id), class: "btn btn-secondary mb-3" %>

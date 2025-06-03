@@ -10,7 +10,7 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def after_sign_in_path_for(resource)
-    organizations_path
+    organization_path(resource.organization)
   end
 
   def after_sign_out_path_for(resource_or_scope)
@@ -45,7 +45,7 @@ class Users::SessionsController < Devise::SessionsController
           sign_in(:user, user)
           render json: {
             success: true,
-            redirect_path: organizations_path
+            redirect_path: organization_path(organization)
           }, status: :ok
         else
           render json: { success: false, error: "❌ No user associated with this organization." }, status: :not_found

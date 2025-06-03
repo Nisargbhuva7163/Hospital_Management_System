@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  organization: one
+  start_time: 2025-06-03 09:08:39
+  and: MyString
+  end_time: 2025-06-03 09:08:39
+
+two:
+  organization: two
+  start_time: 2025-06-03 09:08:39
+  and: MyString
+  end_time: 2025-06-03 09:08:39
