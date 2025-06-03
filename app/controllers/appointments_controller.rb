@@ -11,10 +11,19 @@ class AppointmentsController < ApplicationController
 
   def new
     @appointment = @organization.appointments.new
+    @booking_windows = @organization.booking_windows.order(:start_time)
+    @booking_closed = !@organization.within_booking_window?
+    puts @booking_closed
   end
 
+
   def create
-    redirect_to new_organization_appointment_path(@organization), alert: "Please use OTP verification to book an appointment."
+    @organization = Organization.includes(:booking_windows).find(params[:organization_id])
+    if @organization.within_booking_window?
+      redirect_to new_organization_appointment_path(@organization), alert: "Please use OTP verification to book an appointment."
+    else
+      render :new
+    end
   end
 
   def send_otp
@@ -102,5 +111,4 @@ class AppointmentsController < ApplicationController
     return "" if phone.blank?
     phone.start_with?("+91") ? phone : "+91#{phone}"
   end
-
 end

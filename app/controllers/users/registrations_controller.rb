@@ -24,11 +24,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
           respond_with resource, location: after_inactive_sign_up_path_for(resource)
         end
       else
+        Rails.logger.debug "User errors: #{resource.errors.full_messages.inspect}"
+        Rails.logger.debug "Organization errors: #{resource.organization.errors.full_messages.inspect}" if resource.organization.present?
         clean_up_passwords resource
         set_minimum_password_length
         respond_with resource
       end
     else
+      Rails.logger.debug "User errors: #{resource.errors.full_messages.inspect}"
+      Rails.logger.debug "Organization errors: #{resource.organization.errors.full_messages.inspect}" if resource.organization.present?
       clean_up_passwords resource
       set_minimum_password_length
       respond_with resource

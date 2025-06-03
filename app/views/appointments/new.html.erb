@@ -1,4 +1,4 @@
-<div class="container mt-5" data-controller="otp">
+<div class="container mt-5" id="appointment-section">
   <div class="card shadow-sm">
     <div class="card-header">
       <h4>📋 Book Appointment for <%= @organization.org_name %></h4>
@@ -36,9 +36,12 @@
       <% end %>
     </div>
   </div>
+  <% if @booking_closed %>
+    <%= render "booking_closed", booking_windows: @booking_windows %>
+  <% end %>
 </div>
 
-<!-- OTP Modal -->
+
 <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true" data-otp-target="modal">
   <div class="modal-dialog">
     <div class="modal-content rounded-3">
@@ -60,6 +63,8 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // OTP logic (your original script can remain here)
+
         const appointmentForm = document.getElementById("appointment-form");
         const otpModalEl = document.getElementById("otpModal");
         const otpInput = document.getElementById("otp-code");
@@ -86,14 +91,14 @@
                     "Content-Type": "application/json",
                     "X-CSRF-Token": csrfToken,
                 },
-                body: JSON.stringify(appointmentData),
+                body: JSON.stringify({ appointment: appointmentData }),
             })
-                .then((res) => res.json())
-                .then((data) => {
+                .then(res => res.json())
+                .then(data => {
                     if (data.success) {
                         otpInput.value = "";
                         otpError.textContent = "";
-                        bootstrapModal.show();  // 🔥 SHOW MODAL HERE
+                        bootstrapModal.show();
                     } else {
                         alert(data.error || "OTP could not be sent.");
                     }
@@ -108,7 +113,7 @@
                 return;
             }
 
-            const verifyData = { ...appointmentData, otp_code: otpCode };
+            const verifyData = { phone_number: appointmentData.phone_number, otp_code: otpCode, appointment: appointmentData };
 
             fetch(`/organizations/<%= @organization.id %>/appointments/verify_otp`, {
                 method: "POST",
@@ -118,8 +123,8 @@
                 },
                 body: JSON.stringify(verifyData),
             })
-                .then((res) => res.json())
-                .then((data) => {
+                .then(res => res.json())
+                .then(data => {
                     if (data.success) {
                         bootstrapModal.hide();
                         window.location.href = data.redirect_path;

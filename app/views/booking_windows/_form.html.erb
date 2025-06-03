@@ -1,0 +1,35 @@
+<%= form_with(model: [@organization, booking_window], local: true) do |f| %>
+  <% if booking_window.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(booking_window.errors.count, "error") %> prohibited this booking window from being saved:</h4>
+      <ul>
+        <% booking_window.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <table class="table table-bordered w-50">
+    <thead>
+    <tr>
+      <th>Start Time</th>
+      <th>End Time</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <%= f.time_select :start_time, { default: Time.current, minute_step: 5 }, { class: "form-select" } %>
+      </td>
+      <td>
+        <%= f.time_select :end_time, { default: Time.current + 1.hour, minute_step: 5 }, { class: "form-select" } %>
+      </td>
+      <td>
+        <%= f.submit "Save", class: "btn btn-success" %>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+<% end %>

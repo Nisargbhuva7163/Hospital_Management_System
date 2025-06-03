@@ -1,13 +1,11 @@
 class Organization < ApplicationRecord
   has_many :users, dependent: :destroy
   has_many :appointments, dependent: :destroy
+  has_many :booking_windows, dependent: :destroy
   has_one_attached :qr_code
 
   enum :doctor_status, { checked_out: "checked_out", checked_in: "checked_in" }
 
-  validates :booking_start_time, presence: true
-  validates :booking_end_time, presence: true
-  validate  :booking_window_is_valid
 
   def generate_qr_code!
     return if qr_code.attached?
@@ -27,11 +25,21 @@ class Organization < ApplicationRecord
     file.unlink
   end
 
-  private
+  def within_booking_window?
+    return true if booking_windows.empty?
 
-  def booking_window_is_valid
-    if booking_start_time.present? && booking_end_time.present? && booking_start_time >= booking_end_time
-      errors.add(:booking_start_time, "must be before booking end time")
+    now = Time.current
+    now_time = now.seconds_since_midnight
+
+    booking_windows.any? do |window|
+      puts "Now: #{now_time}"
+
+
+      start_time = window.start_time.seconds_since_midnight
+      end_time = window.end_time.seconds_since_midnight
+
+      puts "Window: #{start_time} - #{end_time}"
+      now_time.between?(start_time, end_time)
     end
   end
 end
