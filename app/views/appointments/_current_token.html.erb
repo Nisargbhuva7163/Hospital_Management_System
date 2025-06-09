@@ -1,0 +1,37 @@
+<% if current_token_appointment.present? %>
+  <div class="row align-items-center gap-3" id="current-token-display">
+    <div class="col-md-2 bg-light border rounded d-flex flex-column justify-content-center align-items-center shadow-sm" style="height: 150px;">
+      <strong class="text-muted mb-2">Current Token</strong>
+      <div class="display-6 fw-bold">
+        <%= current_token_appointment.token_no %>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <table class="table table-bordered table-striped shadow-sm mb-0">
+        <tbody>
+        <tr>
+          <th>Name</th>
+          <td><%= current_token_appointment.name %></td>
+        </tr>
+        <tr>
+          <th>Phone</th>
+          <td><%= current_token_appointment.phone_number %></td>
+        </tr>
+        <tr>
+          <th>Age</th>
+          <td><%= current_token_appointment.age %></td>
+        </tr>
+        <tr>
+          <th>Gender</th>
+          <td><%= current_token_appointment.gender %></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% else %>
+  <div id="current-token-display" class="alert alert-info text-center">
+    No tokens are currently being served.
+  </div>
+<% end %>

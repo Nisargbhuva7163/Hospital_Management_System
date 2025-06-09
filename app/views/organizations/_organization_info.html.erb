@@ -1,0 +1,21 @@
+<div id="organization-info" class="row justify-content-center mb-4">
+  <div class="col-md-8">
+    <div class="card border-secondary shadow-sm">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">🏥 Organization Info</h5>
+      </div>
+      <div class="card-body">
+        <p><strong>Name:</strong> <%= organization.org_name %></p>
+        <p><strong>Phone:</strong> <%= organization.phone_number %></p>
+
+        <hr>
+        <h6>Doctor Status:</h6>
+        <% if organization.checked_in? %>
+          <span class="badge bg-success fs-5">Doctor is available ✅</span>
+        <% else %>
+          <span class="badge bg-danger fs-5">Doctor is not available ❌</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
