@@ -6,6 +6,8 @@ class Organization < ApplicationRecord
 
   enum :doctor_status, { checked_out: "checked_out", checked_in: "checked_in" }
 
+  after_update_commit :broadcast_organization_update
+
 
   def generate_qr_code!
     return if qr_code.attached?
@@ -41,5 +43,27 @@ class Organization < ApplicationRecord
       puts "Window: #{start_time} - #{end_time}"
       now_time.between?(start_time, end_time)
     end
+  end
+
+
+  def broadcast_organization_update
+    # Broadcast organization info update (doctor status, etc.)
+    broadcast_replace_to "organization_#{id}_updates",
+                         target: "organization-info",
+                         partial: "organizations/organization_info",
+                         locals: { organization: self }
+
+    current_token = organization.appointments.where.not(status: "completed")..order(created_at: :asc).first
+
+    broadcast_replace_to "organization_#{id}_updates",
+                         target: "current-token-display",
+                         partial: "appointments/current_token",
+                         locals: { current_token_appointment: current_token }
+
+    # Optional: Also refresh total appointment count
+    broadcast_replace_to "organization_#{id}_updates",
+                         target: "total-appointments-count",
+                         partial: "appointments/total_appointments_count",
+                         locals: { total_appointments_count: appointments.count }
   end
 end

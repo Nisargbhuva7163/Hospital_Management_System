@@ -16,6 +16,9 @@ class AppointmentsController < ApplicationController
     puts @booking_closed
   end
 
+  def show
+    @current_token_appointment = @organization.appointments.where.not(status: "completed").order(created_at: :asc).first
+  end
 
   def create
     @organization = Organization.includes(:booking_windows).find(params[:organization_id])
@@ -59,10 +62,6 @@ class AppointmentsController < ApplicationController
     else
       render json: { success: false, error: "Invalid or expired OTP." }, status: :unprocessable_entity
     end
-  end
-
-  def show
-    @current_token_appointment = @organization.appointments.where.not(status: "completed").order(created_at: :asc).first
   end
 
   def update

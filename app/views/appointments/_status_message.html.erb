@@ -1,0 +1,14 @@
+<div id="appointment-status-message" class="alert
+  <% if appointment.completed? %> alert-success
+  <% elsif appointment.skipped? %> alert-warning
+  <% else %> alert-info
+  <% end %> text-center fw-bold fs-4 mb-4">
+
+  <% if appointment.completed? %>
+    ✅ Your appointment is completed.
+  <% elsif appointment.skipped? %>
+    ⚠️ Your appointment was skipped. Please contact the hospital.
+  <% else %>
+    🕒 Please wait. Your appointment is pending.
+  <% end %>
+</div>

@@ -6,23 +6,25 @@
     </div>
   </div>
 
-  <!-- Completed Appointment Message -->
-  <% if @appointment.completed? %>
-    <div class="alert alert-success text-center fw-bold fs-4 mb-4">
-      ✅ Your appointment is completed.
-    </div>
-  <% elsif @appointment.skipped? %>
-    <div class="alert alert-warning text-center fw-bold fs-4 mb-4">
-      ⚠️ Your appointment was skipped. Please contact the hospital.
-    </div>
-  <% else %>
-    <div class="alert alert-info text-center fw-bold fs-4 mb-4">
-      🕒 Please wait. Your appointment is pending.
-    </div>
-  <% end %>
+  <!-- Appointment Status Message (turbo target for live update) -->
+  <div id="appointment-status-message" class="mb-4">
+    <% if @appointment.completed? %>
+      <div class="alert alert-success text-center fw-bold fs-4">
+        ✅ Your appointment is completed.
+      </div>
+    <% elsif @appointment.skipped? %>
+      <div class="alert alert-warning text-center fw-bold fs-4">
+        ⚠️ Your appointment was skipped. Please contact the hospital.
+      </div>
+    <% else %>
+      <div class="alert alert-info text-center fw-bold fs-4">
+        🕒 Please wait. Your appointment is pending.
+      </div>
+    <% end %>
+  </div>
 
-  <!-- Appointment Details -->
-  <div class="row justify-content-center mb-5">
+  <!-- Appointment Details (Wrap with ID for Turbo update) -->
+  <div id="appointment-details" class="row justify-content-center mb-5">
     <div class="col-md-8">
       <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -33,13 +35,14 @@
           <p><strong>Age:</strong> <%= @appointment.age %></p>
           <p><strong>Gender:</strong> <%= @appointment.gender %></p>
           <p><strong>Phone Number:</strong> <%= @appointment.phone_number %></p>
+          <p><strong>Status:</strong> <%= @appointment.status.capitalize %></p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Organization Details -->
-  <div class="row justify-content-center mb-4">
+  <!-- Organization Details (Wrap with ID for Turbo update) -->
+  <div id="organization-info" class="row justify-content-center mb-4">
     <div class="col-md-8">
       <div class="card border-secondary shadow-sm">
         <div class="card-header bg-secondary text-white">
@@ -69,7 +72,15 @@
 </div>
 
 <h3 class="mt-5">🏥 Current Token Being Served at <%= @organization.org_name %>:</h3>
-<p>
-  <strong>Current Token:</strong>
-  <%= @current_token_appointment&.token_no || "Waiting for first patient..." %>
-</p>
+
+<!-- Current token section wrapped with ID for Turbo update -->
+<div id="current-token">
+  <p>
+    <strong>Current Token:</strong>
+    <%= @current_token_appointment&.token_no || "Waiting for first patient..." %>
+  </p>
+</div>
+
+<!-- Turbo Streams subscription for appointment and organization updates -->
+<%= turbo_stream_from "appointment_#{@appointment.id}_updates" %>
+<%= turbo_stream_from "organization_#{@organization.id}_updates" %>
