@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :set_organization
-  before_action :set_appointment, only: [ :show, :complete, :skip, :update ]
+  before_action :set_appointment, only: [ :preview, :complete, :skip, :update ]
   before_action :authenticate_user!, only: [ :index, :new, :skip, :complete, :update ]
   skip_before_action :verify_authenticity_token, only: [ :send_otp, :verify_otp ]
 
@@ -16,8 +16,11 @@ class AppointmentsController < ApplicationController
     puts @booking_closed
   end
 
-  def show
-    @current_token_appointment = @organization.appointments.where.not(status: "completed").order(created_at: :asc).first
+  def preview
+    @current_token_appointment = @organization.appointments
+                                              .where.not(status: "completed")
+                                              .order(created_at: :asc)
+                                              .first
   end
 
   def create
@@ -53,7 +56,7 @@ class AppointmentsController < ApplicationController
       if @appointment.save
         render json: {
           success: true,
-          redirect_path: organization_appointment_path(@organization, @appointment),
+          redirect_path: preview_organization_appointment_path(@organization, @appointment),
           token_no: new_token_no
         }, status: :ok
       else

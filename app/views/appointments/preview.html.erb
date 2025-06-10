@@ -1,12 +1,12 @@
 <div class="container mt-5">
-  <!-- Token Display Box -->
+  <!-- 🎫 Token Display -->
   <div class="text-center mb-4">
     <div class="alert alert-success display-4 fw-bold py-4">
       🎫 Your Token Number: <%= @appointment.token_no %>
     </div>
   </div>
 
-  <!-- Appointment Status Message (turbo target for live update) -->
+  <!-- 🔄 Appointment Status (Live Turbo Update) -->
   <div id="appointment-status-message" class="mb-4">
     <% if @appointment.completed? %>
       <div class="alert alert-success text-center fw-bold fs-4">
@@ -23,7 +23,7 @@
     <% end %>
   </div>
 
-  <!-- Appointment Details (Wrap with ID for Turbo update) -->
+  <!-- 👤 Patient Details -->
   <div id="appointment-details" class="row justify-content-center mb-5">
     <div class="col-md-8">
       <div class="card shadow-sm">
@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <!-- Organization Details (Wrap with ID for Turbo update) -->
+  <!-- 🏥 Organization Info -->
   <div id="organization-info" class="row justify-content-center mb-4">
     <div class="col-md-8">
       <div class="card border-secondary shadow-sm">
@@ -52,7 +52,6 @@
           <p><strong>Name:</strong> <%= @organization.org_name %></p>
           <p><strong>Phone:</strong> <%= @organization.phone_number %></p>
 
-          <!-- Doctor Status -->
           <hr>
           <h6>Doctor Status:</h6>
           <% if @organization.checked_in? %>
@@ -65,22 +64,52 @@
     </div>
   </div>
 
-  <!-- Book Again Button -->
+  <!-- 🔁 Book Another Appointment -->
   <div class="text-center mt-4">
     <%= link_to "🔁 Book Another Appointment", new_organization_appointment_path(@organization), class: "btn btn-outline-primary" %>
   </div>
+
+  <!-- ⏳ Current Token -->
+  <h3 class="mt-5">🏥 Current Token Being Served at <%= @organization.org_name %>:</h3>
+  <div id="current-token-display">
+    <p>
+      <strong>Current Token:</strong>
+      <%= @current_token_appointment&.token_no || "Waiting for first patient..." %>
+    </p>
+  </div>
+
+  <!-- 📋 All Patients List -->
+  <div class="mt-5">
+    <h3>📋 All Appointments for Today</h3>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped mt-3">
+        <thead class="table-dark text-center">
+        <tr>
+          <th>Token No</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Gender</th>
+          <th>Phone</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+        <tbody class="text-center">
+        <% @organization.appointments.order(:token_no).each do |appt| %>
+          <tr class="<%= 'table-success' if appt.completed? %><%= 'table-warning' if appt.skipped? %>">
+            <td><%= appt.token_no %></td>
+            <td><%= appt.name %></td>
+            <td><%= appt.age %></td>
+            <td><%= appt.gender %></td>
+            <td><%= appt.phone_number %></td>
+            <td><%= appt.status.capitalize %></td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<h3 class="mt-5">🏥 Current Token Being Served at <%= @organization.org_name %>:</h3>
-
-<!-- Current token section wrapped with ID for Turbo update -->
-<div id="current-token">
-  <p>
-    <strong>Current Token:</strong>
-    <%= @current_token_appointment&.token_no || "Waiting for first patient..." %>
-  </p>
-</div>
-
-<!-- Turbo Streams subscription for appointment and organization updates -->
+<!-- Turbo Stream Subscriptions -->
 <%= turbo_stream_from "appointment_#{@appointment.id}_updates" %>
 <%= turbo_stream_from "organization_#{@organization.id}_updates" %>
