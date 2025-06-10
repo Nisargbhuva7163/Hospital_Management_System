@@ -37,6 +37,7 @@ Rails.application.routes.draw do
         post :verify_otp
       end
       member do
+        get :preview
         patch :complete
         patch :skip
       end
