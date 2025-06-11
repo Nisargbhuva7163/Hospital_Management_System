@@ -48,7 +48,7 @@ class Users::SessionsController < Devise::SessionsController
             redirect_path: organization_path(organization)
           }, status: :ok
         else
-          render json: { success: false, error: "❌ No user associated with this organization." }, status: :not_found
+          render json: { success: false, error: "❌ No user associated with this organizations." }, status: :not_found
         end
       else
         render json: { success: false, error: "❌ Invalid OTP or OTP expired." }, status: :unprocessable_entity

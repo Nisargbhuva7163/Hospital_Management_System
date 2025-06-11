@@ -7,6 +7,7 @@ class Appointment < ApplicationRecord
   before_create :set_default_status, if: :new_record?
 
   after_update_commit :broadcast_organization_update
+  after_create_commit :broadcast_new_appointment
 
   # default status for new appointments
 
@@ -18,35 +19,22 @@ class Appointment < ApplicationRecord
 
   private
 
+  def broadcast_new_appointment
+    broadcast_replace_to "organization_#{organization.id}_updates",
+                        target: "appointments-table-body",
+                        partial: "appointments/row",
+                        locals: { appointment: self }
+  end
   def broadcast_organization_update
     broadcast_replace_to "appointment_#{id}_updates",
-                         target: "appointment-status-message",
+                         target: "appointments-status-message",
                          partial: "appointments/status_message",
                          locals: { appointment: self }
 
-    current_token = organization.appointments
-                                .where.not(status: "completed")
-                                .order(created_at: :asc)
-                                .first
 
-    # Get total appointments count
-    total_appointments_count = organization.appointments.count
-
-    # Broadcast current token box update
-    Turbo::StreamsChannel.broadcast_update_to(
-      "organization_#{organization.id}_updates",
-      target: "current-token-display",
-      partial: "appointments/current_token",
-      locals: { current_token_appointment: current_token }
-    )
-
-    # Broadcast total appointments count box update
-    Turbo::StreamsChannel.broadcast_update_to(
-      "organization_#{organization.id}_updates",
-      target: "total-appointments-count",
-      partial: "appointments/total_appointments_count",
-      locals: { total_appointments_count: total_appointments_count }
-    )
-
+    broadcast_replace_to "organization_#{organization.id}_updates",
+                         target: "appointment_row_#{id}",
+                         partial: "appointments/row",
+                         locals: { appointment: self }
   end
 end

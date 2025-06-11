@@ -7,7 +7,7 @@
       <%= form_with model: [@organization, @appointment],
                     url: send_otp_organization_appointments_path(@organization),
                     local: false,
-                    id: "appointment-form",
+                    id: "appointments-form",
                     data: { action: "submit->otp#sendOtp" } do |f| %>
 
         <div class="mb-3">
@@ -65,7 +65,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         // OTP logic (your original script can remain here)
 
-        const appointmentForm = document.getElementById("appointment-form");
+        const appointmentForm = document.getElementById("appointments-form");
         const otpModalEl = document.getElementById("otpModal");
         const otpInput = document.getElementById("otp-code");
         const otpError = document.getElementById("otp-error");

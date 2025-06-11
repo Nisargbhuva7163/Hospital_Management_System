@@ -1,0 +1,8 @@
+<tr id="appointment_row_<%= appointment.id %>" class="<%= 'table-success' if appointment.completed? %><%= 'table-warning' if appointment.skipped? %>">
+  <td><%= appointment.token_no %></td>
+  <td><%= appointment.name %></td>
+  <td><%= appointment.age %></td>
+  <td><%= appointment.gender %></td>
+  <td><%= appointment.phone_number %></td>
+  <td><%= appointment.status.capitalize %></td>
+</tr>

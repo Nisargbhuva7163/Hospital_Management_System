@@ -1,0 +1,52 @@
+<div id="current-token-display">
+  <% if current_token.present? %>
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white">
+        <h6 class="mb-0">🎫 Current Token Details</h6>
+      </div>
+      <div class="card-body">
+        <div class="row g-4 align-items-center">
+
+          <!-- Token Number -->
+          <div class="col-md-3">
+            <div class="bg-light border rounded d-flex flex-column justify-content-center align-items-center py-4 shadow-sm h-100">
+              <strong class="text-muted mb-2">Current Token</strong>
+              <div class="display-6 fw-bold text-primary">
+                <%= current_token.token_no %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Token Details Table -->
+          <div class="col-md-9">
+            <table class="table table-bordered table-striped shadow-sm mb-0">
+              <tbody>
+              <tr>
+                <th>Name</th>
+                <td><%= current_token.name %></td>
+              </tr>
+              <tr>
+                <th>Phone</th>
+                <td><%= current_token.phone_number %></td>
+              </tr>
+              <tr>
+                <th>Age</th>
+                <td><%= current_token.age %></td>
+              </tr>
+              <tr>
+                <th>Gender</th>
+                <td><%= current_token.gender %></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center">
+      🚫 No tokens are currently being served.
+    </div>
+  <% end %>
+</div>

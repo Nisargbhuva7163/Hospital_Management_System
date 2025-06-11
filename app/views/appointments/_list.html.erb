@@ -1,0 +1,54 @@
+<table class="table table-striped table-bordered">
+  <thead class="table-light">
+  <tr>
+    <th>Token No</th>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Gender</th>
+    <th>Phone Number</th>
+    <th>Booked At</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% appointments.each do |appointment| %>
+    <tr>
+      <td><%= appointment.token_no %></td>
+      <td><%= appointment.name %></td>
+      <td><%= appointment.age %></td>
+      <td><%= appointment.gender %></td>
+      <td><%= appointment.phone_number %></td>
+      <td><%= appointment.created_at.strftime("%d %b %Y %H:%M") %></td>
+      <td><%= appointment.status.present? ? appointment.status.capitalize : "Pending" %></td>
+      <td>
+        <% if organization.checked_in? %>
+          <% if appointment.pending? || appointment.skipped? %>
+            <%= button_to "Complete",
+                          complete_organization_appointment_path(organization, appointment),
+                          method: :patch,
+                          class: "btn btn-success btn-sm",
+                          data: { confirm: "Mark this appointments as completed?" } %>
+          <% end %>
+
+          <% if appointment.pending? %>
+            <%= button_to "Skip",
+                          skip_organization_appointment_path(organization, appointment),
+                          method: :patch,
+                          class: "btn btn-warning btn-sm",
+                          data: { confirm: "Skip this appointments?" } %>
+          <% end %>
+        <% else %>
+          <span class="text-muted">Doctor not available</span>
+        <% end %>
+
+        <% if appointment.completed? %>
+          <em class="text-success">Completed</em>
+        <% elsif appointment.skipped? %>
+          <em class="text-warning">Skipped</em>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,7 @@
+<% if organization.checked_in? %>
+  <span class="text-success fw-bold ms-2">Doctor is available</span>
+  <%= button_to "Check Out", toggle_doctor_status_organization_path(organization), method: :patch, class: "btn btn-warning btn-sm ms-2" %>
+<% else %>
+  <span class="text-danger fw-bold ms-2">Doctor is unavailable</span>
+  <%= button_to "Check In", toggle_doctor_status_organization_path(organization), method: :patch, class: "btn btn-success btn-sm ms-2" %>
+<% end %>
