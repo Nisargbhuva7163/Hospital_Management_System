@@ -4,6 +4,8 @@ class Organization < ApplicationRecord
   has_many :booking_windows, dependent: :destroy
   has_one_attached :qr_code
 
+  validates :phone_number, presence: true, uniqueness: true
+
   enum :doctor_status, { checked_out: "checked_out", checked_in: "checked_in" }
 
   after_update_commit :broadcast_organization_update
@@ -47,9 +49,9 @@ class Organization < ApplicationRecord
 
 
   def broadcast_organization_update
-    # Broadcast organization info update (doctor status, etc.)
+    # Broadcast organizations info update (doctor status, etc.)
     broadcast_replace_to "organization_#{id}_updates",
-                         target: "organization-info",
+                         target: "organizations-info",
                          partial: "organizations/organization_info",
                          locals: { organization: self }
     end

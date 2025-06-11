@@ -45,6 +45,14 @@ class OrganizationsController < ApplicationController
       @organization.update(doctor_status: "checked_in")
     end
 
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "organization_#{@organization.id}_updates",
+      target: "doctor-status-nav",
+      partial: "organizations/doctor_status_nav",
+      locals: { organization: @organization }
+    )
+
     respond_to do |format|
       format.html { redirect_to organization_path, notice: "Doctor status updated." }
       format.js   # optional: for AJAX

@@ -27,4 +27,18 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   # def after_confirmation_path_for(resource_name, resource)
   #   super(resource_name, resource)
   # end
+  def show
+    super do |resource|
+      if resource.errors.empty?
+        # Force logout after confirmation
+        return redirect_to new_user_session_path, notice: "Your email has been confirmed. Please sign in."
+      end
+    end
+  end
+
+  protected
+
+  def after_confirmation_path_for(resource_name, resource)
+    new_session_path(resource_name) # This is typically: new_user_session_path
+  end
 end

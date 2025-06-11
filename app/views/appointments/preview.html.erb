@@ -1,3 +1,6 @@
+<%= stylesheet_link_tag "appointments/preview", media: "all" %>
+
+
 <div class="container mt-5">
   <!-- 🎫 Token Display -->
   <div class="text-center mb-4">
@@ -35,7 +38,6 @@
           <p><strong>Age:</strong> <%= @appointment.age %></p>
           <p><strong>Gender:</strong> <%= @appointment.gender %></p>
           <p><strong>Phone Number:</strong> <%= @appointment.phone_number %></p>
-          <p><strong>Status:</strong> <%= @appointment.status.capitalize %></p>
         </div>
       </div>
     </div>
@@ -93,18 +95,12 @@
           <th>Status</th>
         </tr>
         </thead>
-        <tbody class="text-center">
+        <tbody id="appointments-table-body" class="text-center">
         <% @organization.appointments.order(:token_no).each do |appt| %>
-          <tr class="<%= 'table-success' if appt.completed? %><%= 'table-warning' if appt.skipped? %>">
-            <td><%= appt.token_no %></td>
-            <td><%= appt.name %></td>
-            <td><%= appt.age %></td>
-            <td><%= appt.gender %></td>
-            <td><%= appt.phone_number %></td>
-            <td><%= appt.status.capitalize %></td>
-          </tr>
+          <%= render partial: "appointments/row", locals: { appointment: appt } %>
         <% end %>
         </tbody>
+
       </table>
     </div>
   </div>

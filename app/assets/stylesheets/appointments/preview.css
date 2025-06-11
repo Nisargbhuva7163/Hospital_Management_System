@@ -1,0 +1,94 @@
+/* General Page Styling */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
+  color: #212529;
+}
+
+.container {
+  padding: 2.5rem 1rem;
+}
+
+/* Alerts and Headings */
+.alert {
+  font-size: 1.75rem;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.display-4 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+/* Card Styling */
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+  border: none;
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+}
+
+/* Badges */
+.badge {
+  font-size: 1.1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+}
+
+/* Buttons */
+.btn {
+  font-size: 1.15rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 0.75rem;
+}
+
+/* Headings */
+h3 {
+  margin-top: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #343a40;
+}
+
+/* Table Styling */
+.table {
+  font-size: 1.05rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.table th {
+  background-color: #343a40;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.table td {
+  padding: 0.75rem;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f1f3f5;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #e2e6ea;
+}
+
+/* Responsive Fixes */
+.table-responsive {
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
