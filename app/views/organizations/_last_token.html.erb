@@ -1,0 +1,9 @@
+<% if last_token.present? %>
+  <div class="alert alert-secondary fs-5">
+    ✅ Last Completed Token: <strong><%= last_token.token_no %></strong>
+  </div>
+<% else %>
+  <div class="alert alert-warning fs-5">
+    ✅ No completed tokens yet.
+  </div>
+<% end %>
