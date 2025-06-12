@@ -39,6 +39,6 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   protected
 
   def after_confirmation_path_for(resource_name, resource)
-    new_session_path(resource_name) # This is typically: new_user_session_path
+    new_user_session_path(resource_name) # This is typically: new_user_session_path
   end
 end
