@@ -6,7 +6,7 @@ class BookingWindow < ApplicationRecord
   private
 
   def start_time_before_end_time
-    if booking_start_time.present? && booking_end_time.present? && booking_start_time > booking_end_time
+    if start_time.present? && end_time.present? && start_time > end_time
       errors.add(:booking_start_time, "must be before or equal to booking end time")
     end
   end
