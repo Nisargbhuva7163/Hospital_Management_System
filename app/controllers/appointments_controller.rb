@@ -122,6 +122,8 @@ class AppointmentsController < ApplicationController
     current_token = organization.appointments.where(status: "pending").order(:token_no).first
     total_count = organization.appointments.count
     appointments = organization.appointments.order(created_at: :asc)
+    last_token = organization.appointments.where(status: "pending").order(updated_at: :desc).first
+
 
 
     # You can set instance variables or broadcast partials directly
@@ -144,6 +146,13 @@ class AppointmentsController < ApplicationController
       target: "appointments-list",
       partial: "appointments/list",
       locals: { appointments: appointments, organization: organization }
+    )
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "organization_#{organization.id}_updates",
+      target: "last-token-display",
+      partial: "organizations/last_token",
+      locals: { last_token: last_token }
     )
   end
 end

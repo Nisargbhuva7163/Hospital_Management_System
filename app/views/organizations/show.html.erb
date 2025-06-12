@@ -56,17 +56,9 @@
           <%= render partial: "organizations/current_token", locals: { current_token: @current_token_appointment } %>
         </div>
 
-        <!-- ⏮️ Last Token -->
-        <div class="col-md-3" id="last-token-display">
-          <div class="card bg-light shadow border-start border-5 border-secondary">
-            <div class="card-body text-center">
-              <h6 class="card-title">Last Token</h6>
-              <p class="fw-bold fs-4 mb-0">
-                <%= @last_token_appointment&.token_no || "—" %>
-              </p>
-            </div>
-          </div>
-        </div>
+        <%= turbo_frame_tag "last-token-display" do %>
+          <%= render "organizations/last_token", last_token: @last_token_appointment %>
+        <% end %>
 
         <!-- 📋 Total Appointments -->
         <div class="col-md-3" id="total-appointments-count">
