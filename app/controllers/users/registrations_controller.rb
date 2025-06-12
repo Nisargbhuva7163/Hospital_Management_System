@@ -54,4 +54,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       organization_attributes: [ :id, :org_name, :phone_number, :address ]
     )
   end
+
+  def after_update_path_for(resource)
+    organization_path(current_user.organization) # 👈 Redirect to organization show
+  end
 end

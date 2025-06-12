@@ -41,10 +41,10 @@
 
         <!-- 🩺 Doctor Status -->
         <div class="col-md-3">
-          <div class="card text-white <%= @organization.checked_in? ? 'bg-success' : 'bg-danger' %> shadow">
+          <div class="card bg-light shadow border-start border-5 h-100" style="border-left-color: #007bff; border-top-left-radius: 1rem; border-bottom-left-radius: 1rem;">
             <div class="card-body text-center">
-              <h6 class="card-title">Doctor Status</h6>
-              <p class="fw-bold fs-5 mb-0">
+              <h6 class="card-title fw-bold text-dark">Doctor Status</h6>
+              <p class="fw-bold fs-5 text-muted mb-0">
                 <%= @organization.checked_in? ? 'Available ✅' : 'Not Available ❌' %>
               </p>
             </div>
@@ -55,11 +55,11 @@
         <div class="col-md-3" id="current-token-display">
           <%= render partial: "organizations/current_token", locals: { current_token: @current_token_appointment } %>
         </div>
-
-        <%= turbo_frame_tag "last-token-display" do %>
-          <%= render "organizations/last_token", last_token: @last_token_appointment %>
-        <% end %>
-
+        <div class="col-md-3">
+          <%= turbo_frame_tag "last-token-display" do %>
+            <%= render "organizations/last_token", last_token: @last_token_appointment %>
+          <% end %>
+        </div>
         <!-- 📋 Total Appointments -->
         <div class="col-md-3" id="total-appointments-count">
           <div class="card bg-light shadow border-start border-5 border-info">

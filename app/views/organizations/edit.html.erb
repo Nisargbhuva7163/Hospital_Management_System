@@ -4,6 +4,7 @@
   <div class="card shadow-sm p-4" style="max-width: 480px; width: 100%;">
     <%= form_with model: @organization, url: organization_path(@organization), method: :patch, local: true do |f| %>
       <h4>Organization Info</h4>
+
       <div class="mb-3">
         <%= f.label :org_name, "Organization Name" %>
         <%= f.text_field :org_name, class: "form-control" %>
@@ -26,20 +27,6 @@
         <%= email_field_tag "user[email]", @user.email, class: "form-control" %>
       </div>
 
-      <div class="mb-3">
-        <%= label_tag :password, "New Password" %>
-        <%= password_field_tag "user[password]", nil, class: "form-control" %>
-      </div>
-
-      <div class="mb-3">
-        <%= label_tag :password_confirmation, "Confirm Password" %>
-        <%= password_field_tag "user[password_confirmation]", nil, class: "form-control" %>
-      </div>
-
-      <div class="mb-3">
-        <%= label_tag :current_password, "Current Password" %>
-        <%= password_field_tag "user[current_password]", nil, class: "form-control", required: true %>
-      </div>
 
       <div class="mb-3">
         <%= f.submit "Update", class: "btn btn-primary w-100" %>

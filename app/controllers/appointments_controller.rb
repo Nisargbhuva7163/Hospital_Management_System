@@ -1,7 +1,7 @@
 class AppointmentsController < ApplicationController
   before_action :set_organization
   before_action :set_appointment, only: [ :preview, :complete, :skip, :update ]
-  before_action :authenticate_user!, except: [:new, :create, :send_otp, :verify_otp, :preview]
+  before_action :authenticate_user!, except: [ :new, :create, :send_otp, :verify_otp, :preview ]
   skip_before_action :verify_authenticity_token, only: [ :send_otp, :verify_otp ]
 
 
