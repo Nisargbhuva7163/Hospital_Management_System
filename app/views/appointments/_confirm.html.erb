@@ -1,0 +1,32 @@
+<div class="modal-header">
+  <h5 class="modal-title">🛑 Confirm Your Appointment Details</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+  <p><strong>Name:</strong> <%= appointment.name %></p>
+  <p><strong>Age:</strong> <%= appointment.age %></p>
+  <p><strong>Gender:</strong> <%= appointment.gender %></p>
+  <p><strong>Phone:</strong> <%= appointment.phone_number %></p>
+
+  <%= form_with model: [organization, appointment],
+                url: organization_appointments_path(organization),
+                method: :post do |f| %>
+    <%= hidden_field_tag "appointment[name]", appointment.name %>
+    <%= hidden_field_tag "appointment[age]", appointment.age %>
+    <%= hidden_field_tag "appointment[gender]", appointment.gender %>
+    <%= hidden_field_tag "appointment[phone_number]", appointment.phone_number %>
+    <%= hidden_field_tag :confirm, "true" %>
+
+    <%= f.submit "✅ Confirm & Book", class: "btn btn-success w-100 mt-3" %>
+  <% end %>
+</div>
+
+<script>
+    setTimeout(() => {
+        const modalEl = document.getElementById("confirmModal");
+        if (modalEl) {
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        }
+    }, 100);
+</script>

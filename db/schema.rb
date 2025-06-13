@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_03_033839) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_13_060103) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -71,6 +71,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_033839) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "doctor_status", default: "checked-out"
+    t.boolean "otp_enabled", default: true
   end
 
   create_table "roles", force: :cascade do |t|

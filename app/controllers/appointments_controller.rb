@@ -25,10 +25,45 @@ class AppointmentsController < ApplicationController
 
   def create
     @organization = Organization.includes(:booking_windows).find(params[:organization_id])
-    if @organization.within_booking_window?
-      redirect_to new_organization_appointment_path(@organization), alert: "Please use OTP verification to book an appointments."
+
+    if @organization.otp_enabled?
+      if @organization.within_booking_window?
+        redirect_to new_organization_appointment_path(@organization), alert: "Please use OTP verification to book an appointment."
+      else
+        render :new
+      end
     else
-      render :new
+      if @organization.within_booking_window?
+        @appointment = @organization.appointments.new(appointment_params)
+
+        if params[:confirm] == "true"
+          # Final save after confirmation
+          last_token_no = @organization.appointments.maximum(:token_no) || 0
+          new_token_no = last_token_no + 1
+          @appointment.token_no = new_token_no
+
+          if @appointment.save
+            redirect_to preview_organization_appointment_path(@organization, @appointment),
+                        notice: "Appointment booked successfully without OTP."
+          else
+            flash.now[:alert] = @appointment.errors.full_messages.join(", ")
+            render :new
+          end
+        else
+          # Show confirmation modal as partial
+          respond_to do |format|
+            format.html do
+              render partial: "confirm", locals: { appointment: @appointment, organization: @organization }, layout: false
+            end
+            format.json do
+              html = render_to_string(partial: "confirm", formats: [:html], locals: { appointment: @appointment, organization: @organization })
+              render json: { html: html }
+            end
+          end
+        end
+      else
+        render :new
+      end
     end
   end
 
