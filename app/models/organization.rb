@@ -54,5 +54,7 @@ class Organization < ApplicationRecord
                          target: "organizations-info",
                          partial: "organizations/organization_info",
                          locals: { organization: self }
-    end
+  end
+
 end
+

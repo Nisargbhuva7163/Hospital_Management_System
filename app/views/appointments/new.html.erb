@@ -5,10 +5,9 @@
     </div>
     <div class="card-body">
       <%= form_with model: [@organization, @appointment],
-                    url: send_otp_organization_appointments_path(@organization),
+                    url: (@organization.otp_enabled? ? send_otp_organization_appointments_path(@organization) : organization_appointments_path(@organization)),
                     local: false,
-                    id: "appointments-form",
-                    data: { action: "submit->otp#sendOtp" } do |f| %>
+                    id: "appointments-form" do |f| %>
 
         <div class="mb-3">
           <%= f.label :name, class: "form-label" %>
@@ -36,105 +35,143 @@
       <% end %>
     </div>
   </div>
+
   <% if @booking_closed %>
     <%= render "booking_closed", booking_windows: @booking_windows %>
   <% end %>
 </div>
 
-
-<div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true" data-otp-target="modal">
-  <div class="modal-dialog">
-    <div class="modal-content rounded-3">
-      <div class="modal-header">
-        <h5 class="modal-title">🔐 Verify OTP</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <input type="text" class="form-control" id="otp-code" placeholder="Enter OTP" data-otp-target="otpCode">
-        <div id="otp-error" class="text-danger mt-2 small" data-otp-target="otpError"></div>
-      </div>
-      <div class="modal-footer">
-        <button id="verify-otp-btn" class="btn btn-success w-100" data-action="click->otp#verifyOtp">✅ Verify & Confirm</button>
+<%# --- OTP Modal --- %>
+<% if @organization.otp_enabled? %>
+  <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-3">
+        <div class="modal-header">
+          <h5 class="modal-title">🔐 Verify OTP</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="form-control" id="otp-code" placeholder="Enter OTP">
+          <div id="otp-error" class="text-danger mt-2 small"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="verify-otp-btn" class="btn btn-success w-100">✅ Verify & Confirm</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
+<% else %>
+  <%# --- Confirm Modal (loaded by AJAX) --- %>
+  <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content" id="confirmModalContent">
+        <%# Loaded dynamically by JS using render partial %>
+      </div>
+    </div>
+  </div>
+<% end %>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // OTP logic (your original script can remain here)
-
-        const appointmentForm = document.getElementById("appointments-form");
+        const form = document.getElementById("appointments-form");
         const otpModalEl = document.getElementById("otpModal");
+        const confirmModalEl = document.getElementById("confirmModal");
+
         const otpInput = document.getElementById("otp-code");
         const otpError = document.getElementById("otp-error");
         const verifyOtpBtn = document.getElementById("verify-otp-btn");
-        const bootstrapModal = new bootstrap.Modal(otpModalEl);
 
-        let appointmentData = {};
+        const otpModal = otpModalEl ? new bootstrap.Modal(otpModalEl) : null;
+        const confirmModal = confirmModalEl ? new bootstrap.Modal(confirmModalEl) : null;
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        let appointmentData = {};
 
-        appointmentForm.addEventListener("submit", function (e) {
-            e.preventDefault();
+        if (form) {
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
 
-            appointmentData = {
-                name: document.getElementById("appointment_name").value,
-                age: document.getElementById("appointment_age").value,
-                gender: document.getElementById("appointment_gender").value,
-                phone_number: document.getElementById("appointment_phone").value,
-            };
+                appointmentData = {
+                    name: document.getElementById("appointment_name").value,
+                    age: document.getElementById("appointment_age").value,
+                    gender: document.getElementById("appointment_gender").value,
+                    phone_number: document.getElementById("appointment_phone").value,
+                };
 
-            fetch(appointmentForm.action, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": csrfToken,
-                },
-                body: JSON.stringify({ appointment: appointmentData }),
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        otpInput.value = "";
-                        otpError.textContent = "";
-                        bootstrapModal.show();
-                    } else {
-                        alert(data.error || "OTP could not be sent.");
-                    }
+                fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": csrfToken,
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: JSON.stringify({ appointment: appointmentData }),
                 })
-                .catch(() => alert("Something went wrong."));
-        });
+                    .then(res => {
+                        const contentType = res.headers.get("Content-Type") || "";
+                        if (contentType.includes("application/json")) {
+                            return res.json(); // OTP flow
+                        } else {
+                            return res.text(); // Confirm modal HTML
+                        }
+                    })
+                    .then(data => {
+                        if (!data) return;
 
-        verifyOtpBtn.addEventListener("click", function () {
-            const otpCode = otpInput.value.trim();
-            if (!otpCode) {
-                otpError.textContent = "Please enter the OTP.";
-                return;
-            }
+                        if (typeof data === "object" && data.success !== undefined) {
+                            // OTP case
+                            if (data.success) {
+                                otpInput.value = "";
+                                otpError.textContent = "";
+                                otpModal?.show();
+                            } else {
+                                alert(data.error || "OTP could not be sent.");
+                            }
+                        } else {
+                            // Confirm modal HTML
+                            document.getElementById("confirmModalContent").innerHTML = data;
+                            confirmModal?.show();
+                        }
+                    })
+                    .catch(() => alert("Something went wrong."));
+            });
+        }
 
-            const verifyData = { phone_number: appointmentData.phone_number, otp_code: otpCode, appointment: appointmentData };
+        if (verifyOtpBtn) {
+            verifyOtpBtn.addEventListener("click", function () {
+                const otpCode = otpInput.value.trim();
+                if (!otpCode) {
+                    otpError.textContent = "Please enter the OTP.";
+                    return;
+                }
 
-            fetch(`/organizations/<%= @organization.id %>/appointments/verify_otp`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-Token": csrfToken,
-                },
-                body: JSON.stringify(verifyData),
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        bootstrapModal.hide();
-                        window.location.href = data.redirect_path;
-                    } else {
-                        otpError.textContent = data.error || "Incorrect OTP. Please try again.";
-                    }
+                const verifyData = {
+                    phone_number: appointmentData.phone_number,
+                    otp_code: otpCode,
+                    appointment: appointmentData
+                };
+
+                fetch(`/organizations/<%= @organization.id %>/appointments/verify_otp`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-Token": csrfToken,
+                    },
+                    body: JSON.stringify(verifyData),
                 })
-                .catch(() => {
-                    otpError.textContent = "Network error. Please try again.";
-                });
-        });
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            otpModal?.hide();
+                            window.location.href = data.redirect_path;
+                        } else {
+                            otpError.textContent = data.error || "Incorrect OTP. Please try again.";
+                        }
+                    })
+                    .catch(() => {
+                        otpError.textContent = "Network error. Please try again.";
+                    });
+            });
+        }
     });
 </script>

@@ -42,6 +42,14 @@
               <%= render partial: "organizations/doctor_status_nav", locals: { organization: current_user.organization } %>
             </div>
 
+            <%# OTP Toggle Button and Status %>
+            <div class="d-flex align-items-center ms-2">
+              <%= button_to "Toggle OTP (Currently: #{current_user.organization.otp_enabled? ? 'Enabled' : 'Disabled'})",
+                            toggle_otp_organization_path(current_user.organization),
+                            method: :patch,
+                            class: "btn btn-outline-primary btn-sm" %>
+            </div>
+
         <% end %>
 
           <%= link_to "Change Password", edit_user_registration_path, class: "btn btn-outline-secondary btn-sm" %>

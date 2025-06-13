@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   resources :organizations, only: [ :show, :edit, :update ] do
     member do
       patch :toggle_doctor_status
+      patch :toggle_otp
     end
 
     resources :booking_windows, only: [ :new, :create, :destroy ]

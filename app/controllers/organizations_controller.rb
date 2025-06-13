@@ -1,5 +1,5 @@
 class OrganizationsController < ApplicationController
-  before_action :set_organization, only: [ :show, :edit, :update, :toggle_doctor_status ]
+  before_action :set_organization, only: [ :show, :edit, :update, :toggle_doctor_status, :toggle_otp ]
   def show
     unless @organization
       redirect_to root_path, alert: "Access denied."
@@ -57,6 +57,11 @@ class OrganizationsController < ApplicationController
       format.html { redirect_to organization_path, notice: "Doctor status updated." }
       format.js   # optional: for AJAX
     end
+  end
+
+  def toggle_otp
+    @organization.update(otp_enabled: !@organization.otp_enabled)
+    redirect_to organization_path(@organization), notice: "OTP verification has been #{@organization.otp_enabled ? 'enabled' : 'disabled'}."
   end
 
   private
