@@ -5,7 +5,7 @@ class AppointmentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [ :send_otp, :verify_otp ]
 
 
-  def index
+  def index 
     @appointments = @organization.appointments.order(created_at: :asc)
   end
 
@@ -54,7 +54,6 @@ class AppointmentsController < ApplicationController
       @appointment = @organization.appointments.new(appointment_params.merge(token_no: new_token_no))
 
       if @appointment.save
-        turbo_stream_update_organization(@organization)
 
         render json: {
           success: true,
@@ -79,7 +78,6 @@ class AppointmentsController < ApplicationController
 
   def complete
     if @appointment.update(status: "completed")
-      turbo_stream_update_organization(@organization)
       redirect_to organization_appointments_path(@organization), notice: "Appointment marked as completed."
     else
       redirect_to organization_appointments_path(@organization), alert: "Failed to update appointments."
@@ -88,7 +86,6 @@ class AppointmentsController < ApplicationController
 
   def skip
     if @appointment.update(status: "skipped")
-      turbo_stream_update_organization(@organization)
       redirect_to organization_appointments_path(@organization), notice: "Appointment marked as skipped."
     else
       redirect_to organization_appointments_path(@organization), alert: "Failed to update appointments."
@@ -118,41 +115,4 @@ class AppointmentsController < ApplicationController
     phone.start_with?("+91") ? phone : "+91#{phone}"
   end
 
-  def turbo_stream_update_organization(organization)
-    current_token = organization.appointments.where(status: "pending").order(:token_no).first
-    total_count = organization.appointments.count
-    appointments = organization.appointments.order(created_at: :asc)
-    last_token = organization.appointments.where(status: "pending").order(updated_at: :desc).first
-
-
-
-    # You can set instance variables or broadcast partials directly
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "organization_#{organization.id}_updates",
-      target: "current-token-display",
-      partial: "organizations/current_token",
-      locals: { current_token: current_token }
-    )
-
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "organization_#{organization.id}_updates",
-      target: "total-appointments-count",
-      partial: "organizations/total_count",
-      locals: { total_count: total_count }
-    )
-
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "organization_#{organization.id}_updates",
-      target: "appointments-list",
-      partial: "appointments/list",
-      locals: { appointments: appointments, organization: organization }
-    )
-
-    Turbo::StreamsChannel.broadcast_replace_to(
-      "organization_#{organization.id}_updates",
-      target: "last-token-display",
-      partial: "organizations/last_token",
-      locals: { last_token: last_token }
-    )
-  end
 end

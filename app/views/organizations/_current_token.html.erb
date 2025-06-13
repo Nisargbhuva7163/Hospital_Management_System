@@ -1,15 +1,19 @@
-<div class="card bg-light shadow border-start border-5 border-primary h-100 mb-4">
-  <div class="card-body text-center">
-    <h6 class="card-title">Current Token Number</h6>
+<% current_token ||= nil %>
 
-    <% if current_token.present? %>
-      <div class="fs-4 fw-bold text-primary">
-        <%= current_token.token_no %>
-      </div>
-    <% else %>
-      <div class="text-muted fst-italic">
-        No tokens are currently being served.
-      </div>
-    <% end %>
+<div id="current-token-display">
+  <div class="card bg-light shadow border-start border-5 border-primary h-100 mb-4">
+    <div class="card-body text-center">
+      <h6 class="card-title">Current Token Number</h6>
+
+      <% if current_token.present? %>
+        <div class="fs-4 fw-bold text-primary">
+          <%= current_token.token_no %>
+        </div>
+      <% else %>
+        <div class="text-muted fst-italic">
+          No tokens are currently being served.
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
