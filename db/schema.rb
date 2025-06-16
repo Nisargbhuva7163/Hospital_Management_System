@@ -48,6 +48,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_13_060103) do
     t.string "gender"
     t.string "phone_number"
     t.integer "token_no"
+    t.string "email"
     t.bigint "organization_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

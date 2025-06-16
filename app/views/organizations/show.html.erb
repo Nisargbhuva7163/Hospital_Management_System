@@ -1,6 +1,5 @@
 <%= stylesheet_link_tag "organizations/show", media: "all" %>
 
-
 <div class="container mt-5">
   <!-- 🏥 Organization Details -->
   <div class="card shadow-sm mb-4">
@@ -35,13 +34,12 @@
     <div class="card-header bg-dark text-white">
       <h4 class="mb-0">📊 Dashboard</h4>
     </div>
-
     <div class="card-body">
       <div class="row g-4">
 
         <!-- 🩺 Doctor Status -->
-        <div class="col-md-3">
-          <div class="card bg-light shadow border-start border-5 h-100" style="border-left-color: #007bff; border-top-left-radius: 1rem; border-bottom-left-radius: 1rem;">
+        <div class="col-12 col-md-6 col-lg-3">
+          <div class="card bg-light shadow h-100 border-start border-5" style="border-left-color: #007bff;">
             <div class="card-body text-center">
               <h6 class="card-title fw-bold text-dark">Doctor Status</h6>
               <p class="fw-bold fs-5 text-muted mb-0">
@@ -52,17 +50,19 @@
         </div>
 
         <!-- 🎫 Current Token -->
-        <div class="col-md-3">
-            <%= render partial: "organizations/current_token", locals: { current_token: @current_token_appointment } %>
+        <div class="col-12 col-md-6 col-lg-3">
+          <%= render partial: "organizations/current_token", locals: { current_token: @current_token_appointment } %>
         </div>
 
-        <div class="col-md-3">
-            <%= render partial: "organizations/last_token", locals: { last_token: @last_token_appointment } %>
+        <!-- 🕓 Last Token -->
+        <div class="col-12 col-md-6 col-lg-3">
+          <%= render partial: "organizations/last_token", locals: { last_token: @last_token_appointment } %>
         </div>
+
         <!-- 📋 Total Appointments -->
-        < <div class="col-md-3">
+        <div class="col-12 col-md-6 col-lg-3">
           <%= render partial: "organizations/total_count", locals: { total_count: @total_appointments_count } %>
-      </div>
+        </div>
 
       </div>
     </div>

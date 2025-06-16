@@ -1,16 +1,14 @@
 <% last_token ||= nil %>
 
-<div id="last-token-display">
-  <div class="card bg-light shadow border-start border-5 border-success h-100">
-    <div class="card-body text-center">
-      <h6 class="card-title">Last Token Number</h6>
-      <div class="fs-4 fw-bold">
-        <% if last_token.present? %>
-          <%= last_token.token_no %>
-        <% else %>
-          <span class="text-muted">No token is booked yet</span>
-        <% end %>
-      </div>
+<div id="last-token-display" class="card bg-light shadow h-100 border-start border-5" style="border-left-color: #28a745;">
+  <div class="card-body text-center">
+    <h6 class="card-title fw-bold text-dark">🎟️ Last Token Number</h6>
+    <div class="fs-4 fw-bold text-muted">
+      <% if last_token.present? %>
+        <%= last_token.token_no %>
+      <% else %>
+        <span>No token is booked yet</span>
+      <% end %>
     </div>
   </div>
 </div>

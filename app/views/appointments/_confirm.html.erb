@@ -12,6 +12,7 @@
                 url: organization_appointments_path(organization),
                 method: :post do |f| %>
     <%= hidden_field_tag "appointment[name]", appointment.name %>
+    <%= hidden_field_tag "appointment[email]", appointment.email %>
     <%= hidden_field_tag "appointment[age]", appointment.age %>
     <%= hidden_field_tag "appointment[gender]", appointment.gender %>
     <%= hidden_field_tag "appointment[phone_number]", appointment.phone_number %>

@@ -6,6 +6,7 @@ class CreateAppointments < ActiveRecord::Migration[8.0]
       t.string :gender
       t.string :phone_number
       t.integer :token_no
+      t.string :email
       t.references :organization, null: false, foreign_key: true
 
       t.timestamps
