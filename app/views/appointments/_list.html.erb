@@ -3,6 +3,7 @@
   <tr>
     <th>Token No</th>
     <th>Name</th>
+    <th>Gmail</th>
     <th>Age</th>
     <th>Gender</th>
     <th>Phone Number</th>
@@ -11,11 +12,12 @@
     <th>Actions</th>
   </tr>
   </thead>
-  <tbody>
-  <% appointments.each do |appointment| %>
+  <tbody id="appointments-list">
+  <% appointments.select(&:pending?).each do |appointment| %>
     <tr>
       <td><%= appointment.token_no %></td>
       <td><%= appointment.name %></td>
+      <td><%= appointment.email %></td>
       <td><%= appointment.age %></td>
       <td><%= appointment.gender %></td>
       <td><%= appointment.phone_number %></td>

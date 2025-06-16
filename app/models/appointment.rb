@@ -1,6 +1,11 @@
 class Appointment < ApplicationRecord
   belongs_to :organization
-  validates :name, :age, :gender, :phone_number, :token_no, presence: true
+
+  validates :name, presence: true, format: { with: /\A\S+\z/, message: "must not contain spaces" }
+  validates :age, presence: true, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 110 }
+  validates :gender, presence: true
+  validates :phone_number, format: { with: /\A\d{10}\z/, message: "must be exactly 10 digits" }
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
 
   enum :status, { pending: 0, completed: 1, skipped: 2 }
 
@@ -44,7 +49,7 @@ class Appointment < ApplicationRecord
   end
 
   def broadcast_common_organization_updates
-    current_token = organization.appointments.where(status: "pending").order(:token_no).first
+    current_token = organization.appointments.where(status: "pending").order(:created_at).first
     total_count = organization.appointments.count
     appointments = organization.appointments.order(created_at: :asc)
     last_token = organization.appointments.order(created_at: :desc).first

@@ -4,6 +4,9 @@
       <h4>📋 Book Appointment for <%= @organization.org_name %></h4>
     </div>
     <div class="card-body">
+      <!-- Validation Errors -->
+      <div id="form-errors" class="alert alert-danger d-none"></div>
+
       <%= form_with model: [@organization, @appointment],
                     url: (@organization.otp_enabled? ? send_otp_organization_appointments_path(@organization) : organization_appointments_path(@organization)),
                     local: false,
@@ -12,6 +15,11 @@
         <div class="mb-3">
           <%= f.label :name, class: "form-label" %>
           <%= f.text_field :name, class: "form-control", required: true, id: "appointment_name" %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :email, class: "form-label" %>
+          <%= f.email_field :email, class: "form-control", required: true, id: "appointment_email" %>
         </div>
 
         <div class="mb-3">
@@ -91,11 +99,16 @@
             form.addEventListener("submit", function (e) {
                 e.preventDefault();
 
+                const errorBox = document.getElementById("form-errors");
+                errorBox.classList.add("d-none");
+                errorBox.innerHTML = "";
+
                 appointmentData = {
                     name: document.getElementById("appointment_name").value,
                     age: document.getElementById("appointment_age").value,
                     gender: document.getElementById("appointment_gender").value,
                     phone_number: document.getElementById("appointment_phone").value,
+                    email: document.getElementById("appointment_email").value,
                 };
 
                 fetch(form.action, {
@@ -107,33 +120,36 @@
                     },
                     body: JSON.stringify({ appointment: appointmentData }),
                 })
-                    .then(res => {
-                        const contentType = res.headers.get("Content-Type") || "";
-                        if (contentType.includes("application/json")) {
-                            return res.json(); // OTP flow
-                        } else {
-                            return res.text(); // Confirm modal HTML
-                        }
-                    })
-                    .then(data => {
-                        if (!data) return;
+                  .then(res => {
+                      const contentType = res.headers.get("Content-Type") || "";
+                      if (contentType.includes("application/json")) {
+                          return res.json(); // OTP or validation error
+                      } else {
+                          return res.text(); // Confirm modal HTML
+                      }
+                  })
+                  .then(data => {
+                      if (!data) return;
 
-                        if (typeof data === "object" && data.success !== undefined) {
-                            // OTP case
-                            if (data.success) {
-                                otpInput.value = "";
-                                otpError.textContent = "";
-                                otpModal?.show();
-                            } else {
-                                alert(data.error || "OTP could not be sent.");
-                            }
-                        } else {
-                            // Confirm modal HTML
-                            document.getElementById("confirmModalContent").innerHTML = data;
-                            confirmModal?.show();
-                        }
-                    })
-                    .catch(() => alert("Something went wrong."));
+                      if (typeof data === "object" && data.success !== undefined) {
+                          if (data.success) {
+                              otpInput.value = "";
+                              otpError.textContent = "";
+                              otpModal?.show();
+                          } else {
+                              if (data.errors && Array.isArray(data.errors)) {
+                                  errorBox.innerHTML = data.errors.map(e => `<div>• ${e}</div>`).join("");
+                                  errorBox.classList.remove("d-none");
+                              } else {
+                                  alert(data.error || "OTP could not be sent.");
+                              }
+                          }
+                      } else {
+                          document.getElementById("confirmModalContent").innerHTML = data;
+                          confirmModal?.show();
+                      }
+                  })
+                  .catch(() => alert("Something went wrong."));
             });
         }
 
@@ -159,18 +175,18 @@
                     },
                     body: JSON.stringify(verifyData),
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            otpModal?.hide();
-                            window.location.href = data.redirect_path;
-                        } else {
-                            otpError.textContent = data.error || "Incorrect OTP. Please try again.";
-                        }
-                    })
-                    .catch(() => {
-                        otpError.textContent = "Network error. Please try again.";
-                    });
+                  .then(res => res.json())
+                  .then(data => {
+                      if (data.success) {
+                          otpModal?.hide();
+                          window.location.href = data.redirect_path;
+                      } else {
+                          otpError.textContent = data.error || "Incorrect OTP. Please try again.";
+                      }
+                  })
+                  .catch(() => {
+                      otpError.textContent = "Network error. Please try again.";
+                  });
             });
         }
     });
