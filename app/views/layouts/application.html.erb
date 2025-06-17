@@ -1,73 +1,201 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= content_for(:title) || "Hospital Management System" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-    <%= turbo_include_tags %>
+<head>
+  <title><%= content_for(:title) || "Hospital Management System" %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= turbo_include_tags %>
 
+  <%= yield :head %>
 
-    <%= yield :head %>
+  <%# Enable PWA manifest for bootstrap apps %>
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  <%= javascript_importmap_tags %>
+</head>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+<body>
+<%# Show "Admin Dashboard" only for signed-in users and not on new appointments form %>
+<% if user_signed_in? && !(controller_name == "appointments" && action_name.in?(%w[new show preview])) %>
+  <%= turbo_stream_from "organization_#{current_user.organization.id}_updates" %>
+  <nav class="navbar navbar-light bg-white px-4 py-3 d-flex align-items-center">
+    <div class="navbar-brand mb-0 h4">Admin Dashboard</div>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-    <%= javascript_importmap_tags %>
-  </head>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <% if current_user&.organization.present? %>
+        <%= link_to "Manage Appointments", organization_appointments_path(current_user.organization), style: "color: #000; background-color: white; font-weight: 500; text-decoration: none;" %>
 
-  <body>
-  <%# Show "Admin Dashboard" only for signed-in users and not on new appointments form %>
-    <% if user_signed_in? && !(controller_name == "appointments" && action_name.in?(%w[new show preview])) %>
-    <%= turbo_stream_from "organization_#{current_user.organization.id}_updates" %>
-      <nav class="navbar navbar-light bg-white px-4 py-3 d-flex align-items-center">
-        <div class="navbar-brand mb-0 h4">Admin Dashboard</div>
+        <%= link_to "Booking Windows", new_organization_booking_window_path(current_user.organization),
+                    style: "color: #000; background-color: white; font-weight: 500; text-decoration: none;" %>
+        <div id="doctor-status-nav" class="d-flex align-items-center ms-2">
+          <%= render partial: "organizations/doctor_status_nav", locals: { organization: current_user.organization } %>
+        </div>
+      <% end %>
 
-        <div class="ms-auto d-flex align-items-center gap-2">
+      <%# Custom Dropdown for user actions %>
+      <div class="custom-dropdown ms-3 position-relative">
+        <button class="btn btn-primary d-flex align-items-center gap-2" type="button" id="customUserActionsToggle" data-turbo="false" aria-label="User Actions Menu" aria-expanded="false">
+          <i class="bi bi-person-circle"></i>
+          User Actions
+          <i class="bi bi-chevron-down caret-caret"></i>
+        </button>
+        <ul class="custom-dropdown-menu list-unstyled bg-white border rounded shadow-lg mt-2" id="customUserActionsMenu" style="display: none; position: absolute; right: 0; min-width: 220px; z-index: 1000;" aria-hidden="true">
           <% if current_user&.organization.present? %>
-            <%= link_to "Manage Appointments", organization_appointments_path(current_user.organization), style: "color: black; background-color: white; font-weight: bold; text-decoration: none;" %>
-
-            <%= link_to "Booking Windows", new_organization_booking_window_path(current_user.organization),
-                        style: "color: black; background-color: white; font-weight: bold; text-decoration: none;" %>
-            <div id="doctor-status-nav" class="d-flex align-items-center ms-2">
-              <%= render partial: "organizations/doctor_status_nav", locals: { organization: current_user.organization } %>
-            </div>
-
-            <%# OTP Toggle Button and Status %>
-            <div class="d-flex align-items-center ms-2">
-              <%= button_to "Toggle OTP (Currently: #{current_user.organization.otp_enabled? ? 'Enabled' : 'Disabled'})",
+            <li>
+              <%= button_to "Toggle OTP (#{current_user.organization.otp_enabled? ? 'On' : 'Off'})",
                             toggle_otp_organization_path(current_user.organization),
                             method: :patch,
-                            class: "btn btn-outline-primary btn-sm" %>
-            </div>
+                            class: "custom-dropdown-item px-3 py-2 text-start w-100",
+                            data: { turbo: false } %>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+          <% end %>
+          <li>
+            <%= link_to "Change Password", edit_user_registration_path,
+                        class: "custom-dropdown-item px-3 py-2 d-block text-decoration-none text-start w-100" %>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <%= button_to "Log Out", destroy_user_session_path,
+                          method: :delete,
+                          data: { confirm: "Are you sure you want to log out?", turbo: false },
+                          class: "custom-dropdown-item px-3 py-2 text-start w-100" %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-        <% end %>
+<% elsif controller_name == "appointments" && action_name.in?(%w[new show preview]) %>
+  <%# Show "User Dashboard" for public patients on appointments form %>
+  <nav class="navbar navbar-light bg-light px-4 py-3 d-flex justify-content-start align-items-center">
+    <div class="navbar-brand mb-0 h4">User Dashboard</div>
+  </nav>
+<% end %>
 
-          <%= link_to "Change Password", edit_user_registration_path, class: "btn btn-outline-secondary btn-sm" %>
+<%= yield %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<%# Custom Dropdown JavaScript %>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.getElementById("customUserActionsToggle");
+        const menu = document.getElementById("customUserActionsMenu");
 
-          <%= button_to "🚪 Log Out", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure you want to log out?" }, class: "btn btn-outline-danger btn-sm ms-2" %>
-        </div>
-      </nav>
+        if (toggle && menu) {
+            // Toggle dropdown on click
+            toggle.addEventListener("click", function (e) {
+                e.preventDefault();
+                const isVisible = menu.style.display === "block";
+                menu.style.display = isVisible ? "none" : "block";
+                toggle.setAttribute("aria-expanded", !isVisible);
+                menu.setAttribute("aria-hidden", isVisible);
+                console.log("Dropdown toggled, visible:", !isVisible);
+            });
 
+            // Toggle dropdown on Enter key
+            toggle.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    const isVisible = menu.style.display === "block";
+                    menu.style.display = isVisible ? "none" : "block";
+                    toggle.setAttribute("aria-expanded", !isVisible);
+                    menu.setAttribute("aria-hidden", isVisible);
+                    console.log("Dropdown toggled via Enter key, visible:", !isVisible);
+                    if (!isVisible) {
+                        menu.querySelector(".custom-dropdown-item")?.focus();
+                    }
+                }
+            });
 
-  <% elsif controller_name == "appointments" && action_name.in?(%w[new show preview]) %>
-      <%# Show "User Dashboard" for public patients on appointments form %>
-      <nav class="navbar navbar-light bg-light px-4 py-3 d-flex justify-content-start align-items-center">
-        <div class="navbar-brand mb-0 h4">User Dashboard</div>
-      </nav>
-    <% end %>
+            // Close dropdown on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && menu.style.display === "block") {
+                    menu.style.display = "none";
+                    toggle.setAttribute("aria-expanded", "false");
+                    menu.setAttribute("aria-hidden", "true");
+                    toggle.focus();
+                    console.log("Dropdown closed via Escape key");
+                }
+            });
 
-  <%= yield %>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                    menu.style.display = "none";
+                    toggle.setAttribute("aria-expanded", "false");
+                    menu.setAttribute("aria-hidden", "true");
+                    console.log("Dropdown closed due to outside click");
+                }
+            });
+        }
+    });
+</script>
+
+<%# Custom Dropdown CSS %>
+<style>
+    .custom-dropdown-menu {
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        pointer-events: none;
+    }
+    .custom-dropdown-menu[style*="display: block"] {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+    .custom-dropdown-item {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #333;
+        font-size: 0.95rem;
+        transition: background-color 0.2s ease;
+    }
+    .custom-dropdown-item:hover,
+    .custom-dropdown-item:focus {
+        background-color: #e9ecef;
+        color: #000;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+        transition: transform 0.1s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary:hover,
+    .btn-primary:focus {
+        background-color: #0056b3;
+        border-color: #0056b3;
+        transform: scale(1.02);
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+    .btn-primary:active {
+        transform: scale(0.98);
+    }
+    .caret-caret {
+        font-size: 0.9em;
+        transition: transform 0.2s ease;
+    }
+    .btn-primary[aria-expanded="true"] .caret-caret {
+        transform: rotate(180deg);
+    }
+    @media (max-width: 576px) {
+        .custom-dropdown-menu {
+            min-width: 180px;
+            right: -10px;
+        }
+    }
+</style>
+</body>
 </html>

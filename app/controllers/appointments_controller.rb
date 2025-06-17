@@ -4,7 +4,6 @@ class AppointmentsController < ApplicationController
   before_action :authenticate_user!, except: [ :new, :create, :send_otp, :verify_otp, :preview ]
   skip_before_action :verify_authenticity_token, only: [ :send_otp, :verify_otp ]
 
-
   def index
     @appointments = @organization.appointments.order(created_at: :asc)
   end
@@ -31,45 +30,34 @@ class AppointmentsController < ApplicationController
     end
 
     @appointment = @organization.appointments.new(appointment_params)
+    Rails.logger.debug "Appointment params: #{appointment_params.inspect}"
 
-    if @organization.otp_enabled?
-      # OTP is required, redirect to OTP path with alert (handled in JS on client)
-      if @appointment.valid?
-        render json: { success: true } # Proceed to OTP modal
+    if params[:confirm] == "true"
+      # Save appointment for OTP-disabled case
+      last_token_no = @organization.appointments.maximum(:token_no) || 0
+      @appointment.token_no = last_token_no + 1
+
+      if @appointment.save
+        Rails.logger.debug "Appointment saved: #{@appointment.inspect}"
+        render json: {
+          success: true,
+          redirect_path: preview_organization_appointment_path(@organization, @appointment)
+        }, status: :ok
       else
-        render json: { success: false, errors: @appointment.errors.full_messages }, status: :unprocessable_entity
+        Rails.logger.error "Failed to save appointment: #{@appointment.errors.full_messages.join(', ')}"
+        render json: {
+          success: false,
+          errors: @appointment.errors.full_messages
+        }, status: :unprocessable_entity
       end
-
     else
-      if params[:confirm] == "true"
-        # Final save after confirmation
-        last_token_no = @organization.appointments.maximum(:token_no) || 0
-        @appointment.token_no = last_token_no + 1
-
-        if @appointment.save
-          redirect_to preview_organization_appointment_path(@organization, @appointment),
-                      notice: "Appointment booked successfully without OTP."
-        else
-          # Validation failed while saving final time
-          flash.now[:alert] = @appointment.errors.full_messages.join(", ")
-          render :new
-        end
+      # Validate and return confirm modal
+      if @appointment.valid?
+        html = render_to_string(partial: "confirm", formats: [:html], locals: { appointment: @appointment, organization: @organization })
+        render json: { success: true, html: html }
       else
-        # Check validations before showing confirm modal
-        if @appointment.valid?
-          respond_to do |format|
-            format.html do
-              render partial: "confirm", locals: { appointment: @appointment, organization: @organization }, layout: false
-            end
-            format.json do
-              html = render_to_string(partial: "confirm", formats: [:html], locals: { appointment: @appointment, organization: @organization })
-              render json: { html: html }
-            end
-          end
-        else
-          # Show validation errors before confirm modal
-          render json: { success: false, errors: @appointment.errors.full_messages }, status: :unprocessable_entity
-        end
+        Rails.logger.error "Validation failed: #{@appointment.errors.full_messages.join(', ')}"
+        render json: { success: false, errors: @appointment.errors.full_messages }, status: :unprocessable_entity
       end
     end
   end
@@ -89,20 +77,20 @@ class AppointmentsController < ApplicationController
     otp_code = params[:otp_code]
 
     if SmsService.verify_otp(phone, otp_code)
-      appointment_params = params.require(:appointment).permit(:name, :age, :gender, :phone_number)
+      appointment_params = params.require(:appointment).permit(:name, :age, :gender, :phone_number, :email)
       last_token_no = @organization.appointments.maximum(:token_no) || 0
       new_token_no = last_token_no + 1
 
       @appointment = @organization.appointments.new(appointment_params.merge(token_no: new_token_no))
 
       if @appointment.save
-
         render json: {
           success: true,
           redirect_path: preview_organization_appointment_path(@organization, @appointment),
           token_no: new_token_no
         }, status: :ok
       else
+        Rails.logger.error "Failed to save appointment in verify_otp: #{@appointment.errors.full_messages.join(', ')}"
         render json: { success: false, error: @appointment.errors.full_messages.join(", ") }, status: :unprocessable_entity
       end
     else
@@ -156,5 +144,4 @@ class AppointmentsController < ApplicationController
     return "" if phone.blank?
     phone.start_with?("+91") ? phone : "+91#{phone}"
   end
-
 end
