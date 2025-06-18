@@ -49,7 +49,8 @@ class Appointment < ApplicationRecord
   end
 
   def broadcast_common_organization_updates
-    current_token = organization.appointments.where(status: "pending").order(:created_at).first
+    current_token = organization.appointments.where(status: "pending").order(:created_at).first ||
+                    organization.appointments.where(status: "skipped").order(:created_at).first
     total_count = organization.appointments.count
     appointments = organization.appointments.order(created_at: :asc)
     last_token = organization.appointments.order(created_at: :desc).first

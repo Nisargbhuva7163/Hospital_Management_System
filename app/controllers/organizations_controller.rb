@@ -6,7 +6,7 @@ class OrganizationsController < ApplicationController
       return
     end
 
-    @current_token_appointment = @organization.appointments.where.not(status: "completed").order(created_at: :asc).first
+    @current_token_appointment = @organization.appointments.where.not(status: "completed").order(:token_no).first
 
 
       @total_appointments_count = @organization.appointments.count
