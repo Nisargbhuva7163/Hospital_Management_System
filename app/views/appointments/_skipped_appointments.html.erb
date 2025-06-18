@@ -25,11 +25,15 @@
         <td><%= appointment.phone_number %></td>
         <td><%= appointment.updated_at.strftime("%d %b %Y %H:%M") %></td>
         <td>
-          <%= button_to "Complete",
-                        complete_organization_appointment_path(@organization, appointment),
-                        method: :patch,
-                        class: "btn btn-success btn-sm",
-                        data: { confirm: "Mark this appointments as completed?" } %>
+          <% if @organization.checked_in? %>
+            <%= button_to "Complete",
+                          complete_organization_appointment_path(@organization, appointment),
+                          method: :patch,
+                          class: "btn btn-success btn-sm",
+                          data: { confirm: "Mark this appointments as completed?" } %>
+          <% else %>
+            <span class="text-muted">Doctor not available</span>
+          <% end %>
         </td>
       </tr>
     <% end %>

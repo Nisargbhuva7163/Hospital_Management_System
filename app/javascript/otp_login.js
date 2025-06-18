@@ -100,14 +100,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function startCountdown() {
         const countdownText = document.getElementById("resendCountdown");
-        let timeLeft = 15;
+        const resendOtpText = document.getElementById("resendOtpText");
+        let timeLeft = 60;
 
         resendBtn.disabled = true;
-        countdownText.textContent = timeLeft;
+        resendBtn.innerHTML = `Resend OTP in <span id="resendCountdown">${timeLeft}</span>s`;
 
         const interval = setInterval(() => {
             timeLeft--;
-            countdownText.textContent = timeLeft;
+
+            const countdownSpan = document.getElementById("resendCountdown");
+            if (countdownSpan) {
+                countdownSpan.textContent = timeLeft;
+            }
+
             if (timeLeft <= 0) {
                 clearInterval(interval);
                 resendBtn.disabled = false;
@@ -115,4 +121,5 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }, 1000);
     }
+
 });
