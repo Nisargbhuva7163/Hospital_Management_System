@@ -38,16 +38,10 @@
       <div class="row g-4">
 
         <!-- 🩺 Doctor Status -->
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="card bg-light shadow h-100 border-start border-5" style="border-left-color: #007bff;">
-            <div class="card-body text-center">
-              <h6 class="card-title fw-bold text-dark">Doctor Status</h6>
-              <p class="fw-bold fs-5 text-muted mb-0">
-                <%= @organization.checked_in? ? 'Available ✅' : 'Not Available ❌' %>
-              </p>
-            </div>
-          </div>
+        <div class="col-12 col-md-6 col-lg-3" id="doctor-status">
+          <%= render partial: "organizations/doctor_status", locals: { organization: @organization } %>
         </div>
+
 
         <!-- 🎫 Current Token -->
         <div class="col-12 col-md-6 col-lg-3">

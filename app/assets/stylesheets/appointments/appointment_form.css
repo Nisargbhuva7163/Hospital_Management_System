@@ -1,0 +1,349 @@
+/* General container styling */
+#appointment-section {
+    max-width: 680px;
+    margin: 2rem auto;
+    padding: 0 20px;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(180deg, #f0f4ff 0%, #e0e7ff 100%);
+    min-height: 100vh;
+}
+
+/* Card styling */
+.card {
+    border: none;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 1.5rem 0;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: #ffffff;
+    border-radius: 20px 20px 0 0;
+    padding: 2rem;
+    text-align: center;
+}
+
+.card-header h4 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    letter-spacing: 0.03em;
+}
+
+/* Form styling */
+.card-body {
+    padding: 2.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+}
+
+.form-control, .form-select {
+    border-radius: 12px;
+    border: 2px solid #d1d5db;
+    padding: 0.9rem;
+    font-size: 1.05rem;
+    background: #f8fafc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.3);
+    background: #ffffff;
+    outline: none;
+}
+
+.form-control:invalid:not(:focus), .form-select:invalid:not(:focus) {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0.25rem rgba(239, 68, 68, 0.2);
+}
+
+/* Error messages */
+.alert-danger {
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: #fef2f2;
+    color: #991b1b;
+    font-size: 0.95rem;
+    border: 1px solid #f87171;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.4s ease;
+}
+
+.alert-danger div {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-danger div::before {
+    content: "❗";
+    font-size: 1rem;
+}
+
+/* Submit button */
+.btn-primary {
+    border-radius: 12px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    border: none;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease;
+}
+
+.btn-primary:hover::after {
+    width: 300%;
+    height: 300%;
+}
+
+/* Modal styling */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+    background: #ffffff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.4s ease;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.75rem;
+    background: linear-gradient(135deg, #f8fafc, #e5e7eb);
+    border-radius: 20px 20px 0 0;
+}
+
+.modal-title {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.modal-body {
+    padding: 2rem;
+    font-size: 1.1rem;
+    color: #374151;
+    line-height: 1.7;
+}
+
+.modal-body p {
+    margin: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f8fafc;
+    padding: 0.75rem;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.modal-body p strong {
+    color: #1e293b;
+    font-weight: 600;
+    min-width: 100px;
+}
+
+.modal-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 0 0 20px 20px;
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-success {
+    border-radius: 12px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border: none;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
+}
+
+.btn-success:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn-secondary {
+    border-radius: 12px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    border: none;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    color: #ffffff;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #4b5563, #374151);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(75, 85, 99, 0.4);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* OTP input */
+#otp-code {
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1.3rem;
+    text-align: center;
+    border: 2px solid #d1d5db;
+    background: #f8fafc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+}
+
+#otp-code:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 0.25rem rgba(22, 163, 74, 0.3);
+    background: #ffffff;
+    outline: none;
+}
+
+#otp-error {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #991b1b;
+    text-align: center;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+    #appointment-section {
+        padding: 0 15px;
+        margin: 1rem auto;
+    }
+
+    .card-header h4 {
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .form-control, .form-select {
+        font-size: 1rem;
+        padding: 0.8rem;
+    }
+
+    .btn-primary, .btn-success, .btn-secondary {
+        font-size: 1rem;
+        padding: 0.9rem;
+    }
+
+    .modal-dialog {
+        margin: 1.5rem;
+    }
+
+    .modal-title {
+        font-size: 1.4rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .modal-body p {
+        padding: 0.5rem;
+    }
+}
+
+/* Accessibility */
+:focus-visible {
+    outline: 3px solid #6366f1;
+    outline-offset: 3px;
+}
+
+.btn:focus-visible, .form-control:focus-visible, .form-select:focus-visible {
+    outline: none;
+}
+
+/* Modal transitions */
+.modal.fade .modal-dialog {
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+    transform: translateY(50px);
+    opacity: 0;
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+}

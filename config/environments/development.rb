@@ -42,6 +42,18 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.default_url_options = { host: "localhost", port: 7000 }
 
+  # config.action_mailer.delivery_method = :smtp
+  # config.action_mailer.smtp_settings = {
+  #   address:              "smtp.gmail.com",
+  #   port:                 587,
+  #   domain:               "gmail.com",
+  #   user_name:            "mrnisargbhuvaofficial112003@gmail.com",
+  #   password:             "iweb luxg ayuf fprq", # App Password from Gmail
+  #   authentication:       "plain",
+  #   enable_starttls_auto: true
+  # }
+
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -76,5 +88,6 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
   # Allow ngrok domain
   config.hosts << "1552-2405-201-201c-80a7-ad1f-af77-67e0-1c17.ngrok-free.app"
-
+  config.assets.paths << Rails.root.join("app/assets/stylesheets/appointments")
+  config.assets.paths << Rails.root.join("app/assets/stylesheets/organizations")
 end
