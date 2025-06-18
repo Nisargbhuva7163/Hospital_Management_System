@@ -69,4 +69,3 @@ class Organization < ApplicationRecord
                          locals: { organization: self }
   end
 end
-

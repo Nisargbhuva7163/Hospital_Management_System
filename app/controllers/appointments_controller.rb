@@ -53,7 +53,7 @@ class AppointmentsController < ApplicationController
     else
       # Validate and return confirm modal
       if @appointment.valid?
-        html = render_to_string(partial: "confirm", formats: [:html], locals: { appointment: @appointment, organization: @organization })
+        html = render_to_string(partial: "confirm", formats: [ :html ], locals: { appointment: @appointment, organization: @organization })
         render json: { success: true, html: html }
       else
         Rails.logger.error "Validation failed: #{@appointment.errors.full_messages.join(', ')}"

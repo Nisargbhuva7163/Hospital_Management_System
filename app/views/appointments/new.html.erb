@@ -1,4 +1,5 @@
 <%= stylesheet_link_tag "appointments/appointment_form", media: "all", "data-turbo-track": "reload" %>
+<%= javascript_include_tag "appointment_form", "data-turbo-track": "reload" %>
 
 <div class="container mt-5" id="appointment-section">
   <div class="card shadow-sm">
@@ -12,7 +13,8 @@
       <%= form_with model: [@organization, @appointment],
                     url: organization_appointments_path(@organization),
                     local: false,
-                    id: "appointments-form" do |f| %>
+                    id: "appointments-form",
+                    html: { data: { org_id: @organization.id } } do |f| %>
 
         <div class="mb-3">
           <%= f.label :name, class: "form-label" %>
@@ -72,6 +74,12 @@
         <div class="modal-body">
           <input type="text" class="form-control" id="otp-code" placeholder="Enter OTP">
           <div id="otp-error" class="text-danger mt-2 small"></div>
+          <div class="mt-2 text-end">
+            <span class="small">
+              <a href="#" id="resend-otp-link" class="text-primary text-decoration-underline">Resend OTP</a>
+              <span id="otp-timer" class="ms-2 text-muted d-none">(60s)</span>
+            </span>
+          </div>
         </div>
         <div class="modal-footer">
           <button id="verify-otp-btn" class="btn btn-success w-100">✅ Verify & Confirm</button>
@@ -81,208 +89,4 @@
   </div>
 <% end %>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("appointments-form");
-        const otpModalEl = document.getElementById("otpModal");
-        const confirmModalEl = document.getElementById("confirmModal");
 
-        const otpInput = document.getElementById("otp-code");
-        const otpError = document.getElementById("otp-error");
-        const verifyOtpBtn = document.getElementById("verify-otp-btn");
-
-        const otpModal = otpModalEl ? new bootstrap.Modal(otpModalEl) : null;
-        const confirmModal = confirmModalEl ? new bootstrap.Modal(confirmModalEl) : null;
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-        let appointmentData = {};
-
-        function fillForm(data) {
-            document.getElementById("appointment_name").value = data.name || "";
-            document.getElementById("appointment_email").value = data.email || "";
-            document.getElementById("appointment_age").value = data.age || "";
-            document.getElementById("appointment_gender").value = data.gender || "";
-            document.getElementById("appointment_phone").value = data.phone_number || "";
-        }
-
-        if (form) {
-            form.addEventListener("submit", function (e) {
-                e.preventDefault();
-
-                const errorBox = document.getElementById("form-errors");
-                errorBox.classList.add("d-none");
-                errorBox.innerHTML = "";
-
-                appointmentData = {
-                    name: document.getElementById("appointment_name").value,
-                    age: document.getElementById("appointment_age").value,
-                    gender: document.getElementById("appointment_gender").value,
-                    phone_number: document.getElementById("appointment_phone").value,
-                    email: document.getElementById("appointment_email").value,
-                };
-
-                console.log("Submitting form with data:", appointmentData);
-
-                // Validate appointment data and fetch confirm modal
-                fetch(form.action, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-Token": csrfToken,
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                    body: JSON.stringify({ appointment: appointmentData }),
-                })
-                  .then(res => {
-                      console.log("Form submission response status:", res.status);
-                      return res.json();
-                  })
-                  .then(data => {
-                      console.log("Create response:", data);
-                      if (data.success) {
-                          // Show confirm modal
-                          document.getElementById("confirmModalContent").innerHTML = data.html;
-                          confirmModal?.show();
-                      } else {
-                          // Show validation errors
-                          errorBox.innerHTML = data.errors.map(e => `<div>• ${e}</div>`).join("");
-                          errorBox.classList.remove("d-none");
-                      }
-                  })
-                  .catch(error => {
-                      console.error("Error in form submission:", error);
-                      errorBox.innerHTML = `<div>• Something went wrong during form submission.</div>`;
-                      errorBox.classList.remove("d-none");
-                  });
-            });
-        }
-
-        // Handle confirm modal actions
-        confirmModalEl?.addEventListener("click", function (e) {
-            if (e.target.matches("#confirm-book-btn")) {
-                e.preventDefault();
-                console.log("Confirm button clicked, OTP enabled:", <%= @organization.otp_enabled? ? 'true' : 'false' %>);
-                confirmModal?.hide();
-
-                <% if @organization.otp_enabled? %>
-                // OTP enabled: Send OTP and show OTP modal
-                console.log("Sending OTP request with data:", { appointment: appointmentData });
-                fetch(`/organizations/<%= @organization.id %>/appointments/send_otp`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-Token": csrfToken,
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                    body: JSON.stringify({ appointment: appointmentData }),
-                })
-                  .then(res => {
-                      console.log("Send OTP response status:", res.status);
-                      return res.json();
-                  })
-                  .then(data => {
-                      console.log("Send OTP response:", data);
-                      if (data.success) {
-                          otpInput.value = "";
-                          otpError.textContent = "";
-                          otpModal?.show();
-                      } else {
-                          console.error("OTP send failed:", data.error);
-                          document.getElementById("form-errors").innerHTML = `<div>• ${data.error || "Failed to send OTP."}</div>`;
-                          document.getElementById("form-errors").classList.remove("d-none");
-                      }
-                  })
-                  .catch(error => {
-                      console.error("Error sending OTP:", error);
-                      document.getElementById("form-errors").innerHTML = `<div>• Network error while sending OTP.</div>`;
-                      document.getElementById("form-errors").classList.remove("d-none");
-                  });
-                <% else %>
-                // OTP disabled: Book appointment and redirect to preview
-                console.log("Sending confirm request with data:", { appointment: appointmentData, confirm: "true" });
-                fetch(form.action, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-Token": csrfToken,
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                    body: JSON.stringify({ appointment: appointmentData, confirm: "true" }),
-                })
-                  .then(res => {
-                      console.log("Confirm booking response status:", res.status);
-                      return res.json();
-                  })
-                  .then(data => {
-                      console.log("Confirm booking response:", data);
-                      if (data.success && data.redirect_path) {
-                          console.log("Redirecting to preview page:", data.redirect_path);
-                          window.location.href = data.redirect_path;
-                      } else {
-                          console.error("Booking failed:", data.errors);
-                          document.getElementById("form-errors").innerHTML = data.errors.map(e => `<div>• ${e}</div>`).join("");
-                          document.getElementById("form-errors").classList.remove("d-none");
-                      }
-                  })
-                  .catch(error => {
-                      console.error("Error booking appointment:", error);
-                      document.getElementById("form-errors").innerHTML = `<div>• Network error while booking appointment. Please try again.</div>`;
-                      document.getElementById("form-errors").classList.remove("d-none");
-                  });
-                <% end %>
-            } else if (e.target.matches("#edit-appointment-btn")) {
-                e.preventDefault();
-                console.log("Edit button clicked, pre-filling form with:", appointmentData);
-                confirmModal?.hide();
-                fillForm(appointmentData);
-                document.getElementById("appointment-section").scrollIntoView({ behavior: "smooth" });
-            }
-        });
-
-        if (verifyOtpBtn) {
-            verifyOtpBtn.addEventListener("click", function () {
-                const otpCode = otpInput.value.trim();
-                if (!otpCode) {
-                    otpError.textContent = "Please enter the OTP.";
-                    return;
-                }
-
-                const verifyData = {
-                    phone_number: appointmentData.phone_number,
-                    otp_code: otpCode,
-                    appointment: appointmentData,
-                };
-
-                console.log("Verifying OTP with data:", verifyData);
-
-                fetch(`/organizations/<%= @organization.id %>/appointments/verify_otp`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-Token": csrfToken,
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                    body: JSON.stringify(verifyData),
-                })
-                  .then(res => {
-                      console.log("Verify OTP response status:", res.status);
-                      return res.json();
-                  })
-                  .then(data => {
-                      console.log("Verify OTP response:", data);
-                      if (data.success) {
-                          otpModal?.hide();
-                          console.log("Redirecting to preview page:", data.redirect_path);
-                          window.location.href = data.redirect_path;
-                      } else {
-                          otpError.textContent = data.error || "Incorrect OTP. Please try again.";
-                      }
-                  })
-                  .catch(error => {
-                      console.error("Error verifying OTP:", error);
-                      otpError.textContent = "Network error. Please try again.";
-                  });
-            });
-        }
-    });
-</script>

@@ -1,0 +1,87 @@
+/* Booking Modal: Base Styling */
+#bookingWindowModal .modal-content {
+    border-radius: 1.5rem;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: none;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Modal Header */
+#bookingWindowModal .modal-header {
+    background: #facc15; /* yellow-400 */
+    background: linear-gradient(90deg, #facc15, #fef08a);
+    border-bottom: none;
+    padding: 1.5rem;
+    text-align: center;
+    justify-content: center;
+}
+
+#bookingWindowModal .modal-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Modal Body */
+#bookingWindowModal .modal-body {
+    background: #f8fafc;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Message Styling */
+#booking-message {
+    color: #dc2626; /* red-600 */
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+/* Time Slots List */
+#booking-times-list {
+    width: 100%;
+    max-width: 400px;
+    padding: 0;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#booking-times-list .list-group-item {
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+#booking-times-list .list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #bookingWindowModal .modal-content {
+        border-radius: 1rem;
+    }
+
+    #bookingWindowModal .modal-title {
+        font-size: 1.5rem;
+    }
+
+    #booking-message {
+        font-size: 1.1rem;
+    }
+
+    #booking-times-list {
+        font-size: 1rem;
+    }
+}
