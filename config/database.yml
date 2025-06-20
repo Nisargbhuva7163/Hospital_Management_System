@@ -21,8 +21,8 @@ production:
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     database: hospital_oydj
-    username: <%= Rails.application.credentials.dig(:production, :database, :username) %>
-    password: <%= Rails.application.credentials.dig(:production, :database, :password) %>
+    username: <%= Rails.application.credentials.dig(:database, :username) %>
+    password: <%= Rails.application.credentials.dig(:database, :password) %>
     host: dpg-d1ad23emcj7s73fdjtog-a
     port: 5432
 
