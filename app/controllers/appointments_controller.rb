@@ -5,7 +5,7 @@ class AppointmentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [ :send_otp, :verify_otp ]
 
   def index
-    @appointments = @organization.appointments.order(created_at: :asc)
+      @appointments = @organization.appointments.where(created_at: Date.today.all_day).order(created_at: :asc)
   end
 
   def new
