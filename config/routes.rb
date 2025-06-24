@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   unauthenticated do
     root to: redirect("/users/sign_in"), as: :unauthenticated_root
   end
+
   # Defines the root path route ("/")
   resources :organizations, only: [ :show, :edit, :update ] do
     member do
@@ -44,4 +45,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  match "*unmatched", to: "errors#not_found", via: :all
 end
