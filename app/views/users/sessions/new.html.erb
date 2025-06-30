@@ -39,9 +39,13 @@
           <% end %>
 
           <div class="d-grid">
-            <%= f.submit "Log in", class: "btn btn-primary fw-bold" %>
+            <button type="submit" class="btn btn-primary fw-bold d-flex align-items-center justify-content-center gap-2" id="loginBtn">
+              <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+              <span id="loginBtnText">Log in</span>
+            </button>
           </div>
-        <% end %>
+
+      <% end %>
       </div>
     </div>
 
@@ -58,7 +62,10 @@
             <%= f.text_field :phone_number, class: "form-control", placeholder: "Enter your org phone number", required: true %>
           </div>
           <div class="d-grid mb-3">
-            <%= f.submit "Send OTP", class: "btn btn-success fw-bold" %>
+            <button type="submit" class="btn btn-success fw-bold d-flex align-items-center justify-content-center gap-2" id="sendOtpBtn">
+              <span id="otpSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+              <span id="otpButtonText">Send OTP</span>
+            </button>
           </div>
         <% end %>
       </div>
@@ -87,11 +94,15 @@
           </div>
           <%= f.hidden_field :phone_number, id: "hiddenPhoneNumber" %>
           <div class="d-grid">
-            <button type="submit" class="btn btn-primary">Verify OTP</button>
+            <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2" id="verifyOtpBtn">
+              <span id="verifySpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+              <span id="verifyBtnText">Verify OTP</span>
+            </button>
           </div>
         <% end %>
 
-        <button id="resendOtpBtn" class="btn btn-link" disabled>
+        <button id="resendOtpBtn" class="btn btn-link d-flex align-items-center gap-2" disabled>
+          <span id="resendSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
           <span id="resendOtpText">Resend OTP in <span id="resendCountdown">60</span>s</span>
         </button>
 
